@@ -111,7 +111,7 @@ You can also add as many `useEffect` methods as you like as follows:
   // ...
 ```
 
-Finally, you also have access to a `history` object:
+Finally, you also have access to a `history` object (thanks to @TillaTheHun0 for this addition):
 
 ```jsx
   // ...
