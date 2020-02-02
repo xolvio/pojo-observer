@@ -1,13 +1,10 @@
 import {useState, useRef} from 'react'
 
-// any command that changes state will make the hooked component re-render
 export default function useDomain(model) {
 
   const [, stateChange] = useState(model.hash())
-  const commandsHistoryRef = useRef()
 
-  // keep a history which can be used for all sorts of use-cases like testing, undo buffers, entire UI interaction dump for debugging, etc
-  // Kudos to @TillaTheHun0 for the history addition
+  const commandsHistoryRef = useRef()
   if (!commandsHistoryRef.current) {
     commandsHistoryRef.current = []
   }
@@ -15,23 +12,37 @@ export default function useDomain(model) {
 
   const domainModel = {queries: {}, commands: {}}
 
-  // queries get delegated as-is since they don't update state
-  Object.keys(model.queries).forEach((query) =>
-    domainModel.queries[query] = model.queries[query]
-  )
+  function attachQuery(query) {
+    domainModel.queries[query.name] = query
+  }
 
-  // commands use a hash to see if the model has changed
-  Object.keys(model.commands).forEach((command) => {
-    domainModel.commands[command] = (...args) => {
-
-      model.commands[command].apply(model, args)
-
-      // maybe deep copy model here and include on the commandsHistory
-      commandsHistory.push({command, args, id: commandsHistory.length})
-
+  function attachCommand(command) {
+    domainModel.commands[command.name] = (...args) => {
+      const returnValue = command.apply(model, args)
+      commandsHistory.push({command: command.name, args, id: commandsHistory.length})
       stateChange(model.hash())
+      return returnValue
     }
-  })
+  }
+
+  function useExplicitStrategy() {
+    Object.keys(model.queries).forEach((query) => attachQuery(model.queries[query]))
+    Object.keys(model.commands).forEach((command) => attachCommand(model.commands[command]))
+  }
+
+  function useDecoratorStrategy() {
+    Object.keys(model).forEach((method) => {
+        if (model[method].query) attachQuery(model[method])
+        if (model[method].command) attachCommand(model[method])
+      }
+    )
+  }
+
+  if (model.commands && model.queries) {
+    useExplicitStrategy()
+  } else {
+    useDecoratorStrategy()
+  }
 
   return [domainModel.queries, domainModel.commands, commandsHistory]
 }
