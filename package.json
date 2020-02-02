@@ -24,5 +24,21 @@
     "jest": "^24.9.0",
     "react-dom": "^16.9.0",
     "react-scripts": "^2.1.3"
-  }
+  },
+  "description": "Use React hooks with a domain object. This allows you to separate view logic from interaction logic.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xolvio/react-domain-hooks.git"
+  },
+  "keywords": [
+    "react-hooks",
+    "domain-driven-design",
+    "clean-architecture",
+    "cqrs"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/xolvio/react-domain-hooks/issues"
+  },
+  "homepage": "https://github.com/xolvio/react-domain-hooks#readme"
 }
