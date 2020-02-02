@@ -65,7 +65,7 @@ export default function GalleryComponent({model}) {
 
 ```
 
-Note that if the values inside the domain object do not change, the `useDomain` hook will not re-render the component. This is achieved by using `setState` with a `hash` of the model object (See binding below). You can see this in action by trying to repeatedly click the "Previous Image" button. The `previousImage` command in the `GalleryInteraction` domain model will stop changing the `currentImage` when it gets to 0, and since the values inside the domain model are no longer changing, the `hash` method on the model ensures that the React component will not re-render. Sweet!
+Note that if the values inside the domain object do not change, the `useDomain` hook will not re-render the component. This is achieved by using `setState` with a `hash` of the model object ([See binding options below](#binding-options)). You can see this in action by trying to repeatedly click the "Previous Image" button. The `previousImage` command in the `GalleryInteraction` domain model will stop changing the `currentImage` when it gets to 0, and since the values inside the domain model are no longer changing, the `hash` method on the model ensures that the React component will not re-render. Sweet!
 
 You can also add as many `useEffect` methods as you like as follows:
 
@@ -110,7 +110,7 @@ There are three ways to bind your model to the `useDomain` hook, each of which c
  
 ### Option 1: Using Decorators
 1. import the  `@command`, `@query`, and `@hashable` decorators from this module
-1. Decorate the class of the model with the `@hashable` decorator. This adds a `hash` method to the class (see below for more info)
+1. Decorate the class of the model with the `@hashable` decorator. This adds a `hash` method to the class ([See hashing below](#about-hashing))
 1. Decorate your command methods with the `@command` decorator and your query methods with the `@query` decorator
 1. Configure your project to use decorators. See the Babel instructions below
 
@@ -143,6 +143,7 @@ class GalleryInteraction {
 ```
 
 Pros: (1) Has the most readable syntax of all the options and (2) requires the least boiler plate code
+
 Cons: (1) You are polluting the interaction domain abstraction and (2) you have to configure Babel
 
 ### Option 2: Using a Decoupled Explicit Syntax
@@ -177,6 +178,7 @@ export {galleryInteraction}
 ```
 
 Pros: (1) Keeps the interaction domain clean and (2) does not require any special build tooling
+
 Cons: Requires boilerplate code every time you want to add a command/query to your domain model
 
 ### Option 2: Using a Localized Explicit Syntax
