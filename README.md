@@ -181,7 +181,7 @@ Pros: (1) Keeps the interaction domain clean and (2) does not require any specia
 
 Cons: Requires boilerplate code every time you want to add a command/query to your domain model
 
-### Option 2: Using a Localized Explicit Syntax
+### Option 3: Using a Localized Explicit Syntax
 This is a combination of option 1 and 2 where you are explicit but you do so in the same file as the class making slightly more bearable.
 
 ```jsx
