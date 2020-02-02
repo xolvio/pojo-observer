@@ -1,7 +1,7 @@
 {
   "name": "react-domain-hooks",
   "author": "Sam Hatoum",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "dependencies": {
     "object-hash": "^2.0.0",
     "react": "^16.9.0"
@@ -9,9 +9,11 @@
   "scripts": {
     "test:unit:watch": "jest --watch",
     "test:unit": "jest --coverage",
-    "test": "npm run test:unit"
+    "test": "npm run test:unit",
+    "prepublish": "babel src --out-dir lib --ignore '**/*.spec.js,*/demo'"
   },
-  "main": "index.js",
+  "files": ["**/lib/*"],
+  "main": "lib/index.js",
   "devDependencies": {
     "@babel/cli": "^7.2.3",
     "@babel/core": "^7.2.2",
