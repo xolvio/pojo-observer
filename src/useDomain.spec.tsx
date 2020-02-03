@@ -2,9 +2,10 @@ import React, {useEffect} from 'react'
 import {render, fireEvent} from '@testing-library/react'
 import '@testing-library/jest-dom/extend-expect'
 
-import useDomain from './useDomain'
+import useDomain, {Model} from './useDomain'
+import {command, hashable, query} from './decorators'
 
-const model = {
+const model: Model = {
   current: undefined,
   hash: () => model.current,
   commands: {
@@ -126,17 +127,20 @@ describe('useDomain', () => {
       expect(queries.aQuery()).toEqual('a query works')
     })
     it('should bind to models that decorate commands and queries', function() {
-      const decoratedModel = {
-        hash: () => '',
-        aCommand: () => 'a command works',
-        anotherCommand: () => 'another command works',
-        aQuery: () => 'a query works',
-        anotherQuery: () => 'another query works'
+      @hashable
+      class TestClass {
+        @command aCommand() {
+          return 'a command works'
+        }
+        @command anotherCommand = () => 'another command works'
+
+        @query aQuery() {
+          return 'a query works'
+        }
+        @query anotherQuery = () => 'another query works'
       }
-      decoratedModel.aCommand.command = true
-      decoratedModel.anotherCommand.command = true
-      decoratedModel.aQuery.query = true
-      decoratedModel.anotherQuery.query = true
+
+      const decoratedModel = new TestClass()
 
       let queries, commands
 

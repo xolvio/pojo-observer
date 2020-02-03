@@ -1,9 +1,16 @@
 import {useState, useRef} from 'react'
 
-export default function useDomain(model) {
+export interface Model {
+  [key: string]: any
+  hash: () => string
+  commands?: {[key: string]: (...any) => any}
+  queries?: {[key: string]: (...any) => any}
+}
+
+export default function useDomain(model: Model) {
   const [, stateChange] = useState(model.hash())
 
-  const commandsHistoryRef = useRef()
+  const commandsHistoryRef = useRef([])
   if (!commandsHistoryRef.current) {
     commandsHistoryRef.current = []
   }
@@ -33,10 +40,23 @@ export default function useDomain(model) {
     )
   }
 
+  function getAllFuncs(toCheck) {
+    let props = []
+    let obj = toCheck
+    do {
+      props = props.concat(Object.getOwnPropertyNames(obj))
+    } while ((obj = Object.getPrototypeOf(obj)))
+
+    return props.sort().filter(function(e, i, arr) {
+      if (e != arr[i + 1] && typeof toCheck[e] == 'function') return true
+    })
+  }
+
   function useDecoratorStrategy() {
-    Object.keys(model).forEach(method => {
-      if (model[method].query) attachQuery(model[method], method)
-      if (model[method].command) attachCommand(model[method], method)
+    getAllFuncs(model).forEach(methodName => {
+      if (model[methodName].query) attachQuery(model[methodName], methodName)
+      if (model[methodName].command)
+        attachCommand(model[methodName], methodName)
     })
   }
 
