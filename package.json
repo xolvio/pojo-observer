@@ -11,7 +11,7 @@
     "test:unit:watch": "jest --watch",
     "test:unit": "jest --coverage",
     "test": "npm run test:unit",
-    "_prepublish": "npm run build",
+    "prepublish": "npm run build",
     "build:watch": "npm run build:js -- --watch",
     "type-check": "tsc --noEmit",
     "type-check:watch": "npm run type-check -- --watch",
