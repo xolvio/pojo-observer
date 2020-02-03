@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es6",
+    "sourceMap": true,
+    "outDir": "lib/"
+  },
+  "exclude": [
+    "node_modules",
+    "**/*.spec.ts*"
+  ]
+}
