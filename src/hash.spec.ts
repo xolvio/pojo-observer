@@ -1,7 +1,6 @@
 import hash from './hash'
 
 describe('hash', () => {
-
   class Foo {
     constructor(x, y) {
       this.x = x
@@ -40,7 +39,7 @@ describe('hash', () => {
 
     expect(hash(foo1)).not.toEqual(hash(foo2))
   })
-  it('should return a different hash for different classes with the same values', function () {
+  it('should return a different hash for different classes with the same values', function() {
     const foo = new Foo(1, 2)
     const bar = new Bar(1, 2)
 

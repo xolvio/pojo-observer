@@ -10,6 +10,6 @@ export default function toCQRSWithHash({model, commands = [], queries = []}) {
     queries: queries.reduce((obj, query) => {
       obj[query.name] = query.bind(model)
       return obj
-    }, {}),
+    }, {})
   }
 }

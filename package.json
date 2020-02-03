@@ -34,11 +34,30 @@
     "@babel/preset-typescript": "~7.8.3",
     "@testing-library/jest-dom": "^5.1.0",
     "@testing-library/react": "^9.4.0",
+    "@typescript-eslint/eslint-plugin": "^2.18.0",
+    "@typescript-eslint/parser": "^2.18.0",
     "babel-jest": "^24.9.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.10.0",
+    "eslint-plugin-prettier": "^3.1.2",
+    "husky": "^4.2.1",
     "jest": "^25.1.0",
+    "lint-staged": "^10.0.7",
+    "prettier": "^1.19.1",
     "react-dom": "^16.9.0",
     "react-scripts": "^2.1.3",
     "typescript": "^3.7.5"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.ts*": [
+      "eslint --fix",
+      "jest --findRelatedTests"
+    ]
   },
   "description": "Use React hooks with a domain object. This allows you to separate view logic from interaction logic.",
   "repository": {
