@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import {command, hashable, query} from '../lib'
+import {command, hashable, query} from './decorators'
 
 @hashable
 class TestClass {
