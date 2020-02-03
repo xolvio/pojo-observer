@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react'
-import ReactDOM from 'react-dom'
-import {act} from 'react-dom/test-utils'
+import { render, fireEvent, waitForElement } from '@testing-library/react'
+import '@testing-library/jest-dom/extend-expect'
 
 import useDomain from './useDomain'
 
@@ -13,19 +13,6 @@ model.commands = {
 model.queries = {current: () => model.current}
 
 describe('useDomain', () => {
-
-  let container
-
-  beforeEach(() => {
-    container = document.createElement('div')
-    document.body.appendChild(container)
-  })
-
-  afterEach(() => {
-    document.body.removeChild(container)
-    container = null
-  })
-
   describe('rendering', () => {
     let numberOfRenders
     beforeEach(() => {
@@ -40,49 +27,44 @@ describe('useDomain', () => {
       })
       return (
         <>
-          <p>{queries.current()}</p>
+          <p data-testid="current">{queries.current()}</p>
           <button onClick={commands.previous}>previous</button>
         </>
       )
     }
 
     it('should re-render when a command changes the model', () => {
-      act(() => {
-        ReactDOM.render(<MyComponent model={model}/>, container)
-      })
-      const button = container.querySelector('button')
-      const label = container.querySelector('p')
+      const {getByTestId, getByText} = render(<MyComponent model={model}/>)
 
-      expect(label.textContent).toBe("1")
+      const previousButton = getByText('previous')
+      const current = getByTestId('current')
+
+      expect(current).toHaveTextContent("1")
       expect(numberOfRenders).toBe(1)
 
-      act(() => {
-        button.dispatchEvent(new MouseEvent('click', {bubbles: true}))
-      })
+      fireEvent.click(previousButton)
 
-      expect(label.textContent).toBe('0')
+      expect(current).toHaveTextContent("0")
       expect(numberOfRenders).toBe(2)
     })
-    it('should not re-render when a command does not change the model', () => {
-      act(() => ReactDOM.render(<MyComponent model={model}/>, container))
-      const button = container.querySelector('button')
-      const label = container.querySelector('p')
 
-      expect(label.textContent).toBe("1")
+    it('should not re-render when a command does not change the model', () => {
+      const {getByTestId, getByText} = render(<MyComponent model={model}/>)
+
+      const previousButton = getByText('previous')
+      const current = getByTestId('current')
+
+      expect(current).toHaveTextContent("1")
       expect(numberOfRenders).toBe(1)
 
-      act(() => {
-        button.dispatchEvent(new MouseEvent('click', {bubbles: true}))
-      })
+      fireEvent.click(previousButton)
 
-      expect(label.textContent).toBe('0')
+      expect(current).toHaveTextContent("0")
       expect(numberOfRenders).toBe(2)
 
-      act(() => {
-        button.dispatchEvent(new MouseEvent('click', {bubbles: true}))
-      })
+      fireEvent.click(previousButton)
 
-      expect(label.textContent).toBe('0')
+      expect(current).toHaveTextContent("0")
       expect(numberOfRenders).toBe(2)
     })
   })
@@ -95,28 +77,28 @@ describe('useDomain', () => {
 
       return (
         <>
-          <button id="previous" onClick={commands.previous}>previous</button>
-          <button id="next" onClick={commands.next}>next</button>
+          <button onClick={commands.previous}>previous</button>
+          <button onClick={commands.next}>next</button>
         </>
       )
     }
 
     it('should record a command history with a sequential id', () => {
-      act(() => ReactDOM.render(<MyComponent model={model}/>, container))
-      const previousButton = container.querySelector('button#previous')
-      const nextButton = container.querySelector('button#next')
+      const {getByTestId, getByText} = render(<MyComponent model={model}/>)
+
+
+      const previousButton = getByText('previous')
+      const nextButton = getByText('next')
       model.current = 2
 
-      act(() => {
-        previousButton.dispatchEvent(new MouseEvent('click', {bubbles: true}))
-      })
+      fireEvent.click(previousButton)
+
       expect(commandHistory.length).toEqual(1)
       expect(commandHistory[0].id).toEqual(0)
       expect(commandHistory[0].command).toEqual('previous')
 
-      act(() => {
-        nextButton.dispatchEvent(new MouseEvent('click', {bubbles: true}))
-      })
+      fireEvent.click(nextButton)
+
       expect(commandHistory.length).toEqual(2)
       expect(commandHistory[0].id).toEqual(0)
       expect(commandHistory[0].command).toEqual('previous')
@@ -137,7 +119,7 @@ describe('useDomain', () => {
         return (<></>)
       }
 
-      act(() => ReactDOM.render(<MyComponent model={model}/>, container))
+      render(<MyComponent model={model}/>)
 
       expect(commands.aCommand()).toEqual('a command works')
       expect(queries.aQuery()).toEqual('a query works')
@@ -162,7 +144,7 @@ describe('useDomain', () => {
         return (<></>)
       }
 
-      act(() => ReactDOM.render(<MyComponent model={model}/>, container))
+      render(<MyComponent model={model}/>)
 
       expect(commands.aCommand()).toEqual('a command works')
       expect(commands.anotherCommand()).toEqual('another command works')
