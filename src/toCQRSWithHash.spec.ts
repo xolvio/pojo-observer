@@ -1,15 +1,13 @@
 import toCQRSWithHash from './toCQRSWithHash'
 
 describe('toCQRSHarsh', () => {
-
   describe('hash', () => {
-    it('should provide a hash method on the returned object', function () {
+    it('should provide a hash method on the returned object', function() {
       expect(typeof toCQRSWithHash({model: {}}).hash()).toEqual('string')
-    });
+    })
   })
 
   describe('command & query delegation', () => {
-
     class Foo {
       do(thing) {
         this.thing = thing
@@ -57,5 +55,4 @@ describe('toCQRSHarsh', () => {
       expect(fooWithCQRSHash.queries.showThings()).toEqual('things')
     })
   })
-
 })

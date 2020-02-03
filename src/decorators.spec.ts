@@ -1,31 +1,26 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import {command, hashable, query} from '../lib'
 
 @hashable
 class TestClass {
-  @command doSomething() {
-  }
+  @command doSomething() {}
 
-  @command doSomethingElse() {
-  }
+  @command doSomethingElse() {}
 
-  @query showSomething() {
-  }
+  @query showSomething() {}
 
-  @query showSomethingElse() {
-  }
+  @query showSomethingElse() {}
 
-  _aPrivateMethod() {
-  }
+  _aPrivateMethod() {}
 
-  aPublicMethod() {
-  }
+  aPublicMethod() {}
 }
 
 const testClassInstance = new TestClass()
 
 describe('decorators', () => {
   describe('@hashable', () => {
-    it('should provide a hash method on instances of classes that have the @hashable decorator', function () {
+    it('should provide a hash method on instances of classes that have the @hashable decorator', function() {
       expect(typeof testClassInstance.hash()).toEqual('string')
     })
   })
@@ -34,7 +29,7 @@ describe('decorators', () => {
       expect(testClassInstance.doSomething.command).toEqual(true)
       expect(testClassInstance.doSomethingElse.command).toEqual(true)
     })
-    it('should not add any command attributes to methods that have not had the @command decorator', function () {
+    it('should not add any command attributes to methods that have not had the @command decorator', function() {
       expect(testClassInstance._aPrivateMethod.command).toEqual(undefined)
       expect(testClassInstance.aPublicMethod.command).toEqual(undefined)
     })
@@ -44,7 +39,7 @@ describe('decorators', () => {
       expect(testClassInstance.showSomething.query).toEqual(true)
       expect(testClassInstance.showSomethingElse.query).toEqual(true)
     })
-    it('should not add any query attributes to methods that have not had the @query decorator', function () {
+    it('should not add any query attributes to methods that have not had the @query decorator', function() {
       expect(testClassInstance._aPrivateMethod.query).toEqual(undefined)
       expect(testClassInstance.aPublicMethod.query).toEqual(undefined)
     })
