@@ -39,11 +39,11 @@ describe('hash', () => {
 
     expect(hash1).not.toEqual(hash2)
   })
-  it('should return a different hash for different instances of the same class with the same values', () => {
+  it('should return a the same hash for different instances of the same class with the same values', () => {
     const foo1 = new Foo(1, 2)
-    const foo2 = new Bar(1, 2)
+    const foo2 = new Foo(1, 2)
 
-    expect(hash(foo1)).not.toEqual(hash(foo2))
+    expect(hash(foo1)).toEqual(hash(foo2))
   })
   it('should return a different hash for different classes with the same values', function() {
     const foo = new Foo(1, 2)
