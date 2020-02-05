@@ -2,6 +2,9 @@ import hash from './hash'
 
 describe('hash', () => {
   class Foo {
+    public x: any
+    public y: any
+
     constructor(x, y) {
       this.x = x
       this.y = y
@@ -9,6 +12,9 @@ describe('hash', () => {
   }
 
   class Bar {
+    public x: any
+    public y: any
+
     constructor(x, y) {
       this.x = x
       this.y = y

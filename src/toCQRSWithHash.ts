@@ -1,6 +1,7 @@
 import hash from './hash'
 
 export default function toCQRSWithHash({model, commands = [], queries = []}) {
+  // commands and queries have to be of type function
   return {
     hash: () => hash(model),
     commands: commands.reduce((obj, command) => {

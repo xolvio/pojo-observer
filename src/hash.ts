@@ -6,4 +6,6 @@ import hash from 'object-hash'
 // that the `object-hash` library does that, but if we ever change
 // it or choose to implement our own, then it must pass the specs.
 
-export default hash
+export default obj => {
+  return hash(obj)
+}

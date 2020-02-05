@@ -9,6 +9,8 @@ describe('toCQRSHarsh', () => {
 
   describe('command & query delegation', () => {
     class Foo {
+      private thing: string
+      private things: string
       do(thing) {
         this.thing = thing
       }

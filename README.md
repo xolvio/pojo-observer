@@ -120,6 +120,9 @@ import {command, query, hashable} from 'react-domain-hooks'
 @hashable
 class GalleryInteraction {
 
+  @live
+  property = 'foo'
+
   @command
   nextImage() {
     // implementation omitted for brevity
@@ -145,6 +148,9 @@ class GalleryInteraction {
 Pros: (1) Has the most readable syntax of all the options and (2) requires the least boiler plate code
 
 Cons: (1) You are polluting the interaction domain abstraction and (2) you have to configure Babel
+
+#### The @live property decorator
+With this decorator you can annotate a class property to make it "live", which means changes to the property will also trigger a component re-render. The decorator is syntax sugar for creating a getter and setter for your property and marking them as commands and queries. 
 
 ### Option 2: Using a Decoupled Explicit Syntax
 

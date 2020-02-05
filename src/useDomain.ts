@@ -2,6 +2,7 @@ import {useState, useRef} from 'react'
 
 export interface Model {
   [key: string]: any
+
   hash: () => string
   commands?: {[key: string]: (...any) => any}
   queries?: {[key: string]: (...any) => any}
@@ -23,11 +24,15 @@ export default function useDomain(model: Model) {
   }
 
   function attachCommand(command, name) {
-    domainModel.commands[name] = (...args) => {
-      const returnValue = command.apply(model, args)
-      commandsHistory.push({command: name, args, id: commandsHistory.length})
-      stateChange(model.hash())
-      return returnValue
+    if (name.indexOf('__set__') !== -1) {
+      model[name] = () => stateChange(model.hash())
+    } else {
+      domainModel.commands[name] = (...args) => {
+        const returnValue = command.apply(model, args)
+        commandsHistory.push({command: name, args, id: commandsHistory.length})
+        stateChange(model.hash())
+        return returnValue
+      }
     }
   }
 
@@ -35,12 +40,12 @@ export default function useDomain(model: Model) {
     Object.keys(model.queries).forEach(query =>
       attachQuery(model.queries[query], query)
     )
-    Object.keys(model.commands).forEach(command =>
-      attachCommand(model.commands[command], command)
-    )
+    Object.keys(model.commands).forEach(command => {
+      return attachCommand(model.commands[command], command)
+    })
   }
 
-  function getAllFuncs(toCheck) {
+  function getAllMethods(toCheck) {
     let props = []
     let obj = toCheck
     do {
@@ -53,10 +58,11 @@ export default function useDomain(model: Model) {
   }
 
   function useDecoratorStrategy() {
-    getAllFuncs(model).forEach(methodName => {
+    getAllMethods(model).forEach(methodName => {
       if (model[methodName].query) attachQuery(model[methodName], methodName)
-      if (model[methodName].command)
+      if (model[methodName].command) {
         attachCommand(model[methodName], methodName)
+      }
     })
   }
 

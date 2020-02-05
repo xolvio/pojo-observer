@@ -3,7 +3,7 @@ import {render, fireEvent} from '@testing-library/react'
 import '@testing-library/jest-dom/extend-expect'
 
 import useDomain, {Model} from './useDomain'
-import {command, hashable, query} from './decorators'
+import {command, hashable, query, live} from './decorators'
 
 const model: Model = {
   current: undefined,
@@ -16,7 +16,7 @@ const model: Model = {
 }
 
 describe('useDomain', () => {
-  describe('rendering', () => {
+  describe('re-rendering', () => {
     let numberOfRenders
     beforeEach(() => {
       numberOfRenders = 0
@@ -69,6 +69,67 @@ describe('useDomain', () => {
 
       expect(current).toHaveTextContent('0')
       expect(numberOfRenders).toBe(2)
+    })
+
+    it('should re-render when an attribute decorated with @live is set in the model', () => {
+      @hashable
+      class ModelClass {
+        @live _internalProperty = 'initialState'
+        internalChange = () => (this._internalProperty = 'internalChange')
+      }
+
+      const model = new ModelClass()
+
+      function MyComponent() {
+        useDomain(model)
+        return (
+          <>
+            <p data-testid="name">{model._internalProperty}</p>
+          </>
+        )
+      }
+
+      const {getByTestId} = render(<MyComponent model={model} />)
+
+      expect(getByTestId('name')).toHaveTextContent('initialState')
+      model.internalChange()
+      expect(getByTestId('name')).toHaveTextContent('internalChange')
+    })
+
+    it('should re-render when a setter decorated with @command is called on the model', () => {
+      @hashable
+      class ModelClass {
+        _internalProperty = 'initialState'
+
+        @command set foo(val) {
+          this._internalProperty = val
+        }
+
+        showName() {
+          return this._internalProperty
+        }
+
+        internalChange() {
+          this.foo = 'internalChange'
+        }
+      }
+
+      const model = new ModelClass()
+
+      function MyComponent() {
+        useDomain(model)
+        return (
+          <>
+            <p data-testid="name">{model.showName()}</p>
+          </>
+        )
+      }
+
+      const {getByTestId} = render(<MyComponent model={model} />)
+
+      expect(getByTestId('name')).toHaveTextContent('initialState')
+      model.internalChange()
+      expect(getByTestId('name')).toHaveTextContent('internalChange')
     })
   })
   describe('history', () => {
@@ -132,12 +193,10 @@ describe('useDomain', () => {
         @command aCommand() {
           return 'a command works'
         }
-        @command anotherCommand = () => 'another command works'
 
         @query aQuery() {
           return 'a query works'
         }
-        @query anotherQuery = () => 'another query works'
       }
 
       const decoratedModel = new TestClass()
@@ -152,8 +211,28 @@ describe('useDomain', () => {
       render(<MyComponent model={model} />)
 
       expect(commands.aCommand()).toEqual('a command works')
-      expect(commands.anotherCommand()).toEqual('another command works')
       expect(queries.aQuery()).toEqual('a query works')
+    })
+
+    it('should bind to models that decorate commands and queries with anonymous functions', function() {
+      @hashable
+      class TestClass {
+        @command anotherCommand = () => 'another command works'
+        @query anotherQuery = () => 'another query works'
+      }
+
+      const decoratedModel = new TestClass()
+
+      let queries, commands
+
+      function MyComponent() {
+        ;[queries, commands] = useDomain(decoratedModel)
+        return <></>
+      }
+
+      render(<MyComponent model={model} />)
+
+      expect(commands.anotherCommand()).toEqual('another command works')
       expect(queries.anotherQuery()).toEqual('another query works')
     })
   })
