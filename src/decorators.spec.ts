@@ -29,7 +29,7 @@ class TestClass {
 
 let testClassInstance
 
-describe.only('decorators', () => {
+describe('decorators', () => {
   beforeEach(() => {
     testClassInstance = new TestClass()
   })
