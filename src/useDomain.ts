@@ -60,9 +60,8 @@ export default function useDomain(model: Model) {
   function useDecoratorStrategy() {
     getAllMethods(model).forEach(methodName => {
       if (model[methodName].query) attachQuery(model[methodName], methodName)
-      if (model[methodName].command) {
+      if (model[methodName].command)
         attachCommand(model[methodName], methodName)
-      }
     })
   }
 
