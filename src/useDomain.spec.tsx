@@ -71,7 +71,7 @@ describe('useDomain', () => {
       expect(numberOfRenders).toBe(2)
     })
 
-    it('should re-render when an attribute decorated with @live is set in the model', () => {
+    it('should re-render when an attribute decorated with @live is set in the model', async () => {
       @hashable
       class ModelClass {
         @live _internalProperty = 'initialState'
@@ -94,6 +94,35 @@ describe('useDomain', () => {
       expect(getByTestId('name')).toHaveTextContent('initialState')
       model.internalChange()
       expect(getByTestId('name')).toHaveTextContent('internalChange')
+    })
+
+    it('should re-render when an attribute decorated with @live is asynchronously set in the model', async () => {
+      @hashable
+      class ModelClass {
+        @live _internalProperty = 'initialState'
+        internalChange = () => (this._internalProperty = 'internalChange')
+      }
+
+      const model = new ModelClass()
+
+      function MyComponent() {
+        useDomain(model)
+        return (
+          <>
+            <p data-testid="name">{model._internalProperty}</p>
+          </>
+        )
+      }
+
+      const {getByTestId} = render(<MyComponent model={model} />)
+
+      expect(getByTestId('name')).toHaveTextContent('initialState')
+
+      setTimeout(() => (model._internalProperty = 'Out of band'), 10)
+      expect(getByTestId('name')).toHaveTextContent('initialState')
+
+      await new Promise(resolve => setTimeout(resolve, 100))
+      expect(getByTestId('name')).toHaveTextContent('Out of band')
     })
 
     it('should re-render when a setter decorated with @command is called on the model', () => {
