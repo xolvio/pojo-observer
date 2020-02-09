@@ -27,7 +27,7 @@ class TestClass {
   aMethodFatArrow = () => ''
 }
 
-let testClassInstance
+let testClassInstance: TestClass
 
 describe('decorators', () => {
   beforeEach(() => {

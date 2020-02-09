@@ -8,7 +8,40 @@ export interface Model {
   queries?: {[key: string]: (...any) => any}
 }
 
-export default function useDomain(model: Model) {
+export interface WrappedModel {
+  [key: string]: any
+
+  commands?: {[key: string]: (...any) => any}
+  queries?: {[key: string]: (...any) => any}
+}
+
+type SubType<Base, Condition> = Pick<
+  Base,
+  {
+    [Key in keyof Base]: Base[Key] extends Condition ? Key : never
+  }[keyof Base]
+>
+
+class Costam {
+  constructor() {}
+  private hash: () => {}
+  command: () => {}
+  otherCommand: () => {}
+  someThing: 'test'
+}
+
+const costam = new Costam()
+
+function tryThat<T>(model: T): [SubType<T, (_: any) => any>, any[]] {
+  return [model, []]
+}
+
+const [model, history] = tryThat(costam)
+model
+
+export default function useDomain<T>(
+  model: T
+): [SubType<T, (_: any) => any>, any[]] {
   const [, stateChange] = useState(model.hash())
 
   const commandsHistoryRef = useRef([])
@@ -59,9 +92,10 @@ export default function useDomain(model: Model) {
 
   function useDecoratorStrategy() {
     getAllMethods(model).forEach(methodName => {
-      if (model[methodName].query) attachQuery(model[methodName], methodName)
-      if (model[methodName].command)
-        attachCommand(model[methodName], methodName)
+      attachCommand(model[methodName], methodName)
+      // if (model[methodName].query) attachQuery(model[methodName], methodName)
+      // if (model[methodName].command)
+      //   attachCommand(model[methodName], methodName)
     })
   }
 
@@ -71,5 +105,5 @@ export default function useDomain(model: Model) {
     useDecoratorStrategy()
   }
 
-  return [domainModel.queries, domainModel.commands, commandsHistory]
+  return [domainModel, commandsHistory]
 }

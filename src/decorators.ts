@@ -64,7 +64,9 @@ export function query(target, key: string, descriptor) {
   }
 }
 
-export function hashable<T extends {new (...args: any[]): {}}>(constructor: T) {
+export function hashable<T extends {new (...args: any[]): {}}>(
+  constructor: T
+): T {
   return class extends constructor {
     hash = () => {
       return hash(this)
