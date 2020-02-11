@@ -38,7 +38,7 @@ type Model = {
 
 export default function<T extends Model>(model: T): T {
   if (!model.__useDomainId) {
-    // model.__useDomainId = '1' // ALL TESTS PASS WITH THIS!
+    // model.__useDomainId = '1' // TESTS NO LONGER PASS WITH THIS!
     model.__useDomainId = `${Math.random()}`
   }
 
@@ -48,13 +48,7 @@ export default function<T extends Model>(model: T): T {
     }
   }
 
-  const [currentHash, stateChange] = useState(model.hash())
-
-  const commandsHistoryRef = useRef([])
-  if (!commandsHistoryRef.current) {
-    commandsHistoryRef.current = []
-  }
-  const commandsHistory = commandsHistoryRef.current
+  const [, stateChange] = useState(model.hash())
 
   const rerunCallback = useCallback(() => {
     stateChange(model.hash())
@@ -64,37 +58,6 @@ export default function<T extends Model>(model: T): T {
     eventEmitter.on(model.__useDomainId, rerunCallback)
     return () => eventEmitter.remove(model.__useDomainId)
   }, [model.__useDomainId])
-
-  const domainModel = {}
-
-  function attachMethod(method, name) {
-    domainModel[name] = (...args) => {
-      const returnValue = method.apply(model, args)
-      if (currentHash !== model.hash()) {
-        commandsHistory.push({
-          command: name,
-          args,
-          id: commandsHistory.length
-        })
-        eventEmitter.emit(model.__useDomainId)
-        // do not need this anymore
-        // stateChange(model.hash())
-      }
-      return returnValue
-    }
-  }
-
-  function getAllMethods(toCheck) {
-    let props = []
-    let obj = toCheck
-    do {
-      props = props.concat(Object.getOwnPropertyNames(obj))
-    } while ((obj = Object.getPrototypeOf(obj)))
-
-    return props.sort().filter(function(e, i, arr) {
-      if (e != arr[i + 1] && typeof toCheck[e] == 'function') return true
-    })
-  }
 
   function getAllButMethods(toCheck) {
     let props = []
@@ -107,10 +70,6 @@ export default function<T extends Model>(model: T): T {
       if (e != arr[i + 1] && typeof toCheck[e] !== 'function') return true
     })
   }
-
-  getAllMethods(model).forEach(methodName => {
-    attachMethod(model[methodName], methodName)
-  })
 
   const attachProxy = (originalNotMethod, notMethodName, object = model) => {
     if (

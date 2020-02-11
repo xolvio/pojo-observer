@@ -158,7 +158,7 @@ test('add hash internally', () => {
 test('that it can work with objects', () => {
   const obj = {
     foo: 'here',
-    doIt: ()=> obj.foo = 'there'
+    mutateMe: () => (obj.foo = 'there')
   }
 
   function ComponentUsingModel({model}) {
@@ -170,23 +170,22 @@ test('that it can work with objects', () => {
       </div>
     )
   }
-  const {getByTestId} = render(<ComponentUsingModel model={obj}/>)
+  const {getByTestId} = render(<ComponentUsingModel model={obj} />)
 
   expect(getByTestId('foo')).toHaveTextContent('here')
-  obj.doIt()
+  obj.mutateMe()
   expect(getByTestId('foo')).toHaveTextContent('there')
-
 })
 
 test('that it can work with multiple objects', () => {
   const obj = {
     foo: 'here',
-    doIt: ()=> obj.foo = 'there'
+    mutateMe: () => (obj.foo = 'there')
   }
 
   const dobj = {
     bar: 'pete',
-    doIt: ()=> dobj.bar = 'paul'
+    mutateMe: () => (dobj.bar = 'paul')
   }
 
   function ComponentUsingModel({model1, model2}) {
@@ -200,26 +199,28 @@ test('that it can work with multiple objects', () => {
       </div>
     )
   }
-  const {getByTestId} = render(<ComponentUsingModel model1={obj} model2={dobj}/>)
+  const {getByTestId} = render(
+    <ComponentUsingModel model1={obj} model2={dobj} />
+  )
 
   expect(getByTestId('foo')).toHaveTextContent('here')
   expect(getByTestId('bar')).toHaveTextContent('pete')
-  obj.doIt()
+  obj.mutateMe()
   expect(getByTestId('foo')).toHaveTextContent('there')
   expect(getByTestId('bar')).toHaveTextContent('pete')
-  dobj.doIt()
+  dobj.mutateMe()
   expect(getByTestId('bar')).toHaveTextContent('paul')
 })
 
 test('that it can work with multiple objects', () => {
   const obj = {
     foo: 'here',
-    doIt: ()=> obj.foo = 'there'
+    mutateMe: () => (obj.foo = 'there')
   }
 
   const dobj = {
     bar: 'pete',
-    doIt: ()=> dobj.bar = 'paul'
+    mutateMe: () => (dobj.bar = 'paul')
   }
 
   function ComponentUsingModel1({model}) {
@@ -247,10 +248,10 @@ test('that it can work with multiple objects', () => {
 
   expect(getByTestId1('foo')).toHaveTextContent('here')
   expect(getByTestId2('bar')).toHaveTextContent('pete')
-  obj.doIt()
+  obj.mutateMe()
   expect(getByTestId1('foo')).toHaveTextContent('there')
   expect(getByTestId2('bar')).toHaveTextContent('pete')
-  dobj.doIt()
+  dobj.mutateMe()
   expect(getByTestId1('foo')).toHaveTextContent('there')
   expect(getByTestId2('bar')).toHaveTextContent('paul')
 })
@@ -316,7 +317,7 @@ test('add hash explicitly', () => {
   expect(getByTestId('numberInOther')).toHaveTextContent(1)
 })
 
-let howManyTimes = 0
+const howManyTimes = 0
 test('have a global model', async () => {
   class TestClass {
     __current = 2
@@ -415,12 +416,9 @@ test('some ddd idea', () => {
     set current(value) {
       this.__current = value
     }
-
-    constructor() {}
   }
 
   class TestClass {
-
     member: MemberClass = new MemberClass()
 
     previous(isTrue: boolean) {
@@ -494,4 +492,60 @@ test('some ddd idea', () => {
   debug()
 
   // await wait(() => expect(getByTestId('numberInOther')).toHaveTextContent(5))
+})
+
+test('Changing a state of one model should not reload a react component using a different model', () => {
+  const firstModel = {
+    foo: 'here',
+    mutateMe: () => (firstModel.foo = 'there')
+  }
+
+  let firstComponentRerunTimes = 0
+  function ComponentUsingModel() {
+    firstComponentRerunTimes++
+    useDomain(firstModel)
+
+    return (
+      <div>
+        <div data-testid={'foo'}>{firstModel.foo}</div>
+      </div>
+    )
+  }
+
+  const otherModel = {
+    someValue: 'someString',
+    changeMe: function() {
+      this.someValue = 'otherString'
+    },
+    getRerunTimes: function() {
+      return this.someValue
+    }
+  }
+
+  let differentComponentRerunTimes = 0
+  function ComponentUsingDifferentModel() {
+    differentComponentRerunTimes++
+    useDomain(otherModel)
+
+    return (
+      <div>
+        <div>{otherModel.getRerunTimes()}</div>
+      </div>
+    )
+  }
+
+  const {getByTestId} = render(<ComponentUsingModel />)
+  render(<ComponentUsingDifferentModel />)
+  expect(differentComponentRerunTimes).toEqual(1)
+  expect(firstComponentRerunTimes).toEqual(1)
+  expect(getByTestId('foo')).toHaveTextContent('here')
+
+  firstModel.mutateMe()
+  expect(getByTestId('foo')).toHaveTextContent('there')
+  expect(firstComponentRerunTimes).toEqual(2)
+  expect(differentComponentRerunTimes).toEqual(1)
+
+  otherModel.changeMe()
+  expect(differentComponentRerunTimes).toEqual(2)
+  expect(firstComponentRerunTimes).toEqual(2)
 })
