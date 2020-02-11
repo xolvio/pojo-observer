@@ -1,3 +1,3 @@
-import useDomain from './useDomain'
+import {useDomain, wrapDomain} from './useDomain'
 
 export default useDomain

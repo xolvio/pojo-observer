@@ -1,5 +1,5 @@
 import React from 'react'
-import useDomain from './useDomain'
+import {wrapDomain, useDomain} from './useDomain'
 import {render, fireEvent, wait} from '@testing-library/react'
 import '@testing-library/jest-dom/extend-expect'
 
@@ -20,10 +20,10 @@ import {addHash} from './addHash'
 //   // let initialized: boolean
 //   // let command
 //   // const useModelWithHooks = model => {
-//   //   return useDomain(model)
+//   //   return wrapDomain(model)
 //   //   if (!initialized) {
 //   //     initialized = true
-//   //     ;[command] = useDomain(model)
+//   //     ;[command] = wrapDomain(model)
 //   //     return [command]
 //   //   }
 //   //   return [{previous: () => {}, getCurrent: () => {}}]
@@ -71,7 +71,7 @@ import {addHash} from './addHash'
 //
 //   const instanceOfTestClass = new TestClass()
 //   function ComponentWithNestedUseOfTheModelObject() {
-//     const methods = useDomain(instanceOfTestClass)
+//     const methods = wrapDomain(instanceOfTestClass)
 //     return (
 //       <>
 //         <ComponentUsingModel methods={methods} />
@@ -526,6 +526,66 @@ test('Changing a state of one model should not reload a react component using a 
   function ComponentUsingDifferentModel() {
     differentComponentRerunTimes++
     useDomain(otherModel)
+
+    return (
+      <div>
+        <div>{otherModel.getRerunTimes()}</div>
+      </div>
+    )
+  }
+
+  const {getByTestId} = render(<ComponentUsingModel />)
+  render(<ComponentUsingDifferentModel />)
+  expect(differentComponentRerunTimes).toEqual(1)
+  expect(firstComponentRerunTimes).toEqual(1)
+  expect(getByTestId('foo')).toHaveTextContent('here')
+
+  firstModel.mutateMe()
+  expect(getByTestId('foo')).toHaveTextContent('there')
+  expect(firstComponentRerunTimes).toEqual(2)
+  expect(differentComponentRerunTimes).toEqual(1)
+
+  otherModel.changeMe()
+  expect(differentComponentRerunTimes).toEqual(2)
+  expect(firstComponentRerunTimes).toEqual(2)
+})
+
+test.only('Changing a state of one model should not reload a react component using a different model', () => {
+  const firstModel = {
+    foo: 'here',
+    mutateMe: () => (firstModel.foo = 'there')
+  }
+  wrapDomain(firstModel)
+
+  let firstComponentRerunTimes = 0
+  function ComponentUsingModel() {
+    useDomain(firstModel)
+    firstComponentRerunTimes++
+
+    return (
+      <div>
+        <div data-testid={'foo'}>{firstModel.foo}</div>
+      </div>
+    )
+  }
+
+  const otherModel = {
+    someValue: 'someString',
+    changeMe: function() {
+      this.someValue = 'otherString'
+    },
+    getRerunTimes: function() {
+      return this.someValue
+    }
+  }
+
+  wrapDomain(otherModel)
+
+  let differentComponentRerunTimes = 0
+  function ComponentUsingDifferentModel() {
+    useDomain(otherModel)
+
+    differentComponentRerunTimes++
 
     return (
       <div>

@@ -36,7 +36,7 @@ type Model = {
   hash?: () => string
 }
 
-export default function<T extends Model>(model: T): T {
+export const wrapDomain = function<T extends Model>(model: T): T {
   if (!model.__useDomainId) {
     // model.__useDomainId = '1' // TESTS NO LONGER PASS WITH THIS!
     model.__useDomainId = `${Math.random()}`
@@ -47,17 +47,6 @@ export default function<T extends Model>(model: T): T {
       return hash(this)
     }
   }
-
-  const [, stateChange] = useState(model.hash())
-
-  const rerunCallback = useCallback(() => {
-    stateChange(model.hash())
-  }, [model.__useDomainId])
-
-  useEffect(() => {
-    eventEmitter.on(model.__useDomainId, rerunCallback)
-    return () => eventEmitter.remove(model.__useDomainId)
-  }, [model.__useDomainId])
 
   function getAllButMethods(toCheck) {
     let props = []
@@ -105,5 +94,19 @@ export default function<T extends Model>(model: T): T {
     attachProxy(model[notMethodName], notMethodName)
   })
 
+  return model
+}
+
+export const useDomain = function<T extends Model>(model: T): T {
+  const [, stateChange] = useState(model.hash())
+
+  const rerunCallback = useCallback(() => {
+    stateChange(model.hash())
+  }, [model.__useDomainId])
+
+  useEffect(() => {
+    eventEmitter.on(model.__useDomainId, rerunCallback)
+    return () => eventEmitter.remove(model.__useDomainId)
+  }, [model.__useDomainId])
   return model
 }
