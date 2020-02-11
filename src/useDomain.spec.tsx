@@ -1,102 +1,14 @@
-import React from 'react'
+import * as React from 'react'
 import useDomain from './useDomain'
-import {render, fireEvent, wait} from '@testing-library/react'
+import {render, fireEvent} from '@testing-library/react'
 import '@testing-library/jest-dom/extend-expect'
-
 import {addHash} from './addHash'
-//
-// test('', () => {
-//   class TestClass {
-//     current = 2
-//     previous(isTrue: boolean) {
-//       this.current--
-//     }
-//
-//     getCurrent() {
-//       return this.current
-//     }
-//   }
-//
-//   // let initialized: boolean
-//   // let command
-//   // const useModelWithHooks = model => {
-//   //   return useDomain(model)
-//   //   if (!initialized) {
-//   //     initialized = true
-//   //     ;[command] = useDomain(model)
-//   //     return [command]
-//   //   }
-//   //   return [{previous: () => {}, getCurrent: () => {}}]
-//   // }
-//
-//   let reloadedFirst = 0
-//
-//   function ComponentUsingModel({
-//     methods
-//   }: {
-//     methods: DomainTypeWrapper<TestClass>
-//   }) {
-//     console.log('GOZDECKI reloadedOther++', reloadedFirst++)
-//     console.log('GOZDECKI methods.getCurrent()', methods.getCurrent())
-//     return (
-//       <div>
-//         <button onClick={() => methods.previous(true)}>
-//           Change the numbers in first component
-//         </button>
-//         <div data-testid={'numberInFirst'}>{methods.getCurrent()}</div>
-//       </div>
-//     )
-//   }
-//
-//   let reloadedOther = 0
-//
-//   function OtherComponentUsingModel({
-//     methods
-//   }: {
-//     methods: DomainTypeWrapper<TestClass>
-//   }) {
-//     console.log('GOZDECKI reloadedOther++', reloadedOther++)
-//     console.log('GOZDECKI methods.getCurrent()', methods.getCurrent())
-//     return (
-//       <div>
-//         <button onClick={() => methods.previous(true)}>
-//           Change in the other component
-//         </button>
-//         <div data-testid={'numberInOther'}>{methods.getCurrent()}</div>
-//       </div>
-//     )
-//   }
-//
-//   let reloaded = 0
-//
-//   const instanceOfTestClass = new TestClass()
-//   function ComponentWithNestedUseOfTheModelObject() {
-//     const methods = useDomain(instanceOfTestClass)
-//     return (
-//       <>
-//         <ComponentUsingModel methods={methods} />
-//         <OtherComponentUsingModel methods={methods} />
-//       </>
-//     )
-//   }
-//
-//   const {getByTestId, getByText} = render(
-//     <ComponentWithNestedUseOfTheModelObject />
-//   )
-//
-//   expect(getByTestId('numberInFirst')).toHaveTextContent(2)
-//   expect(getByTestId('numberInOther')).toHaveTextContent(2)
-//
-//   fireEvent.click(getByText('Change the numbers in first component'))
-//
-//   expect(getByTestId('numberInFirst')).toHaveTextContent(1)
-//   expect(getByTestId('numberInOther')).toHaveTextContent(1)
-// })
 
 test('add hash internally', () => {
   class TestClass {
     current = 2
-    previous(isTrue: boolean) {
+
+    previous() {
       this.current--
     }
 
@@ -112,7 +24,7 @@ test('add hash internally', () => {
 
     return (
       <div>
-        <button onClick={() => methods.previous(true)}>
+        <button onClick={() => methods.previous()}>
           Change the numbers in first component
         </button>
         <div data-testid={'numberInFirst'}>{methods.getCurrent()}</div>
@@ -125,7 +37,7 @@ test('add hash internally', () => {
 
     return (
       <div>
-        <button onClick={() => methods.previous(true)}>
+        <button onClick={() => methods.previous()}>
           Change in the other component
         </button>
         <div data-testid={'numberInOther'}>{methods.getCurrent()}</div>
@@ -152,7 +64,7 @@ test('add hash internally', () => {
   fireEvent.click(getByText('Change the numbers in first component'))
 
   expect(getByTestId('numberInFirst')).toHaveTextContent('1')
-  expect(getByTestId('numberInOther')).toHaveTextContent(1)
+  expect(getByTestId('numberInOther')).toHaveTextContent('1')
 })
 
 test('that it can work with objects', () => {
@@ -170,6 +82,7 @@ test('that it can work with objects', () => {
       </div>
     )
   }
+
   const {getByTestId} = render(<ComponentUsingModel model={obj} />)
 
   expect(getByTestId('foo')).toHaveTextContent('here')
@@ -178,14 +91,14 @@ test('that it can work with objects', () => {
 })
 
 test('that it can work with multiple objects', () => {
-  const obj = {
+  const obj1 = {
     foo: 'here',
-    mutateMe: () => (obj.foo = 'there')
+    mutateMe: () => (obj1.foo = 'there')
   }
 
-  const dobj = {
+  const obj2 = {
     bar: 'pete',
-    mutateMe: () => (dobj.bar = 'paul')
+    mutateMe: () => (obj2.bar = 'paul')
   }
 
   function ComponentUsingModel({model1, model2}) {
@@ -194,33 +107,34 @@ test('that it can work with multiple objects', () => {
 
     return (
       <div>
-        <div data-testid={'foo'}>{obj.foo}</div>
-        <div data-testid={'bar'}>{dobj.bar}</div>
+        <div data-testid={'foo'}>{obj1.foo}</div>
+        <div data-testid={'bar'}>{obj2.bar}</div>
       </div>
     )
   }
+
   const {getByTestId} = render(
-    <ComponentUsingModel model1={obj} model2={dobj} />
+    <ComponentUsingModel model1={obj1} model2={obj2} />
   )
 
   expect(getByTestId('foo')).toHaveTextContent('here')
   expect(getByTestId('bar')).toHaveTextContent('pete')
-  obj.mutateMe()
+  obj1.mutateMe()
   expect(getByTestId('foo')).toHaveTextContent('there')
   expect(getByTestId('bar')).toHaveTextContent('pete')
-  dobj.mutateMe()
+  obj2.mutateMe()
   expect(getByTestId('bar')).toHaveTextContent('paul')
 })
 
 test('that it can work with multiple objects', () => {
-  const obj = {
+  const obj1 = {
     foo: 'here',
-    mutateMe: () => (obj.foo = 'there')
+    mutateMe: () => (obj1.foo = 'there')
   }
 
-  const dobj = {
+  const obj2 = {
     bar: 'pete',
-    mutateMe: () => (dobj.bar = 'paul')
+    mutateMe: () => (obj2.bar = 'paul')
   }
 
   function ComponentUsingModel1({model}) {
@@ -228,7 +142,7 @@ test('that it can work with multiple objects', () => {
 
     return (
       <div>
-        <div data-testid={'foo'}>{obj.foo}</div>
+        <div data-testid={'foo'}>{obj1.foo}</div>
       </div>
     )
   }
@@ -238,20 +152,20 @@ test('that it can work with multiple objects', () => {
 
     return (
       <div>
-        <div data-testid={'bar'}>{dobj.bar}</div>
+        <div data-testid={'bar'}>{obj2.bar}</div>
       </div>
     )
   }
 
-  const getByTestId1 = render(<ComponentUsingModel1 model={obj} />).getByTestId
-  const getByTestId2 = render(<ComponentUsingModel2 model={dobj} />).getByTestId
+  const getByTestId1 = render(<ComponentUsingModel1 model={obj1} />).getByTestId
+  const getByTestId2 = render(<ComponentUsingModel2 model={obj2} />).getByTestId
 
   expect(getByTestId1('foo')).toHaveTextContent('here')
   expect(getByTestId2('bar')).toHaveTextContent('pete')
-  obj.mutateMe()
+  obj1.mutateMe()
   expect(getByTestId1('foo')).toHaveTextContent('there')
   expect(getByTestId2('bar')).toHaveTextContent('pete')
-  dobj.mutateMe()
+  obj2.mutateMe()
   expect(getByTestId1('foo')).toHaveTextContent('there')
   expect(getByTestId2('bar')).toHaveTextContent('paul')
 })
@@ -259,7 +173,8 @@ test('that it can work with multiple objects', () => {
 test('add hash explicitly', () => {
   class TestClass {
     current = 2
-    previous(isTrue: boolean) {
+
+    previous() {
       this.current--
     }
 
@@ -273,7 +188,7 @@ test('add hash explicitly', () => {
 
     return (
       <div>
-        <button onClick={() => methods.previous(true)}>
+        <button onClick={() => methods.previous()}>
           Change the numbers in first component
         </button>
         <div data-testid={'numberInFirst'}>{methods.getCurrent()}</div>
@@ -286,7 +201,7 @@ test('add hash explicitly', () => {
 
     return (
       <div>
-        <button onClick={() => methods.previous(true)}>
+        <button onClick={() => methods.previous()}>
           Change in the other component
         </button>
         <div data-testid={'numberInOther'}>{methods.getCurrent()}</div>
@@ -308,34 +223,28 @@ test('add hash explicitly', () => {
     <ComponentWithNestedUseOfTheModelObject />
   )
 
-  expect(getByTestId('numberInFirst')).toHaveTextContent(2)
-  expect(getByTestId('numberInOther')).toHaveTextContent(2)
+  expect(getByTestId('numberInFirst')).toHaveTextContent('2')
+  expect(getByTestId('numberInOther')).toHaveTextContent('2')
 
   fireEvent.click(getByText('Change the numbers in first component'))
 
-  expect(getByTestId('numberInFirst')).toHaveTextContent(1)
-  expect(getByTestId('numberInOther')).toHaveTextContent(1)
+  expect(getByTestId('numberInFirst')).toHaveTextContent('1')
+  expect(getByTestId('numberInOther')).toHaveTextContent('1')
 })
 
-const howManyTimes = 0
 test('have a global model', async () => {
   class TestClass {
     __current = 2
+
     get current() {
       return this.__current
     }
+
     set current(value) {
       this.__current = value
     }
 
-    // constructor() {
-    //   setInterval(() => {
-    //     howManyTimes++
-    //     this.current--
-    //   }, 1000)
-    // }
-
-    previous(isTrue: boolean) {
+    previous() {
       this.current--
     }
 
@@ -355,7 +264,7 @@ test('have a global model', async () => {
 
     return (
       <div>
-        <button onClick={() => methods.previous(true)}>
+        <button onClick={() => methods.previous()}>
           Change the numbers in first component
         </button>
         <div data-testid={'numberInFirst'}>{methods.getCurrent()}</div>
@@ -368,7 +277,7 @@ test('have a global model', async () => {
 
     return (
       <div>
-        <button onClick={() => methods.previous(true)}>
+        <button onClick={() => methods.previous()}>
           Change in the other component
         </button>
         <div data-testid={'numberInOther'}>{methods.getCurrent()}</div>
@@ -389,20 +298,20 @@ test('have a global model', async () => {
     <ComponentWithNestedUseOfTheModelObject />
   )
 
-  expect(getByTestId('numberInFirst')).toHaveTextContent(2)
-  expect(getByTestId('numberInOther')).toHaveTextContent(2)
+  expect(getByTestId('numberInFirst')).toHaveTextContent('2')
+  expect(getByTestId('numberInOther')).toHaveTextContent('2')
   expect(model.getCurrent()).toEqual(2)
 
   fireEvent.click(getByText('Change the numbers in first component'))
 
-  expect(getByTestId('numberInFirst')).toHaveTextContent(1)
-  expect(getByTestId('numberInOther')).toHaveTextContent(1)
+  expect(getByTestId('numberInFirst')).toHaveTextContent('1')
+  expect(getByTestId('numberInOther')).toHaveTextContent('1')
   expect(model.getCurrent()).toEqual(1)
 
-  model.previous(true)
+  model.previous()
   expect(model.getCurrent()).toEqual(0)
-  expect(getByTestId('numberInFirst')).toHaveTextContent(0)
-  expect(getByTestId('numberInOther')).toHaveTextContent(0)
+  expect(getByTestId('numberInFirst')).toHaveTextContent('0')
+  expect(getByTestId('numberInOther')).toHaveTextContent('0')
 
   // await wait(() => expect(getByTestId('numberInOther')).toHaveTextContent(5))
 })
@@ -410,9 +319,11 @@ test('have a global model', async () => {
 test('some ddd idea', () => {
   class MemberClass {
     __current = 2
+
     get current() {
       return this.__current
     }
+
     set current(value) {
       this.__current = value
     }
@@ -421,7 +332,7 @@ test('some ddd idea', () => {
   class TestClass {
     member: MemberClass = new MemberClass()
 
-    previous(isTrue: boolean) {
+    previous() {
       this.member.current--
     }
 
@@ -440,7 +351,7 @@ test('some ddd idea', () => {
     const methods = useNumberChanger()
     return (
       <div>
-        <button onClick={() => methods.previous(true)}>
+        <button onClick={() => methods.previous()}>
           Change the numbers in first component
         </button>
         <div data-testid={'numberInFirst'}>{methods.getCurrent()}</div>
@@ -454,7 +365,7 @@ test('some ddd idea', () => {
 
     return (
       <div>
-        <button onClick={() => methods.previous(true)}>
+        <button onClick={() => methods.previous()}>
           Change in the other component
         </button>
         <div data-testid={'numberInOther'}>{methods.getCurrent()}</div>
@@ -475,20 +386,20 @@ test('some ddd idea', () => {
     <ComponentWithNestedUseOfTheModelObject />
   )
 
-  expect(getByTestId('numberInFirst')).toHaveTextContent(2)
-  expect(getByTestId('numberInOther')).toHaveTextContent(2)
+  expect(getByTestId('numberInFirst')).toHaveTextContent('2')
+  expect(getByTestId('numberInOther')).toHaveTextContent('2')
   expect(model.getCurrent()).toEqual(2)
 
   fireEvent.click(getByText('Change the numbers in first component'))
 
-  expect(getByTestId('numberInFirst')).toHaveTextContent(1)
-  expect(getByTestId('numberInOther')).toHaveTextContent(1)
+  expect(getByTestId('numberInFirst')).toHaveTextContent('1')
+  expect(getByTestId('numberInOther')).toHaveTextContent('1')
   expect(model.getCurrent()).toEqual(1)
 
-  model.previous(true)
+  model.previous()
   expect(model.getCurrent()).toEqual(0)
-  expect(getByTestId('numberInFirst')).toHaveTextContent(0)
-  expect(getByTestId('numberInOther')).toHaveTextContent(0)
+  expect(getByTestId('numberInFirst')).toHaveTextContent('0')
+  expect(getByTestId('numberInOther')).toHaveTextContent('0')
   debug()
 
   // await wait(() => expect(getByTestId('numberInOther')).toHaveTextContent(5))
@@ -501,6 +412,7 @@ test('Changing a state of one model should not reload a react component using a 
   }
 
   let firstComponentRerunTimes = 0
+
   function ComponentUsingModel() {
     firstComponentRerunTimes++
     useDomain(firstModel)
@@ -523,6 +435,7 @@ test('Changing a state of one model should not reload a react component using a 
   }
 
   let differentComponentRerunTimes = 0
+
   function ComponentUsingDifferentModel() {
     differentComponentRerunTimes++
     useDomain(otherModel)
