@@ -1,15 +1,15 @@
 import {useCallback, useEffect, useRef, useState} from 'react'
 import hash from './hash'
 
-function uuid(){
-  const dt = new Date().getTime();
-  const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    const r = (dt + Math.random()*16)%16 | 0;
-    dt = Math.floor(dt/16);
-    return (c=='x' ? r :(r&0x3|0x8)).toString(16);
-  });
-  return uuid;
-}
+// function uuid(){
+//   let dt = new Date().getTime();
+//   const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+//     const r = (dt + Math.random()*16)%16 | 0;
+//     dt = Math.floor(dt/16);
+//     return (c=='x' ? r :(r&0x3|0x8)).toString(16);
+//   });
+//   return uuid;
+// }
 
 class EventEmitter {
   callbacks = {}
@@ -36,14 +36,14 @@ type Model = {
   hash?: () => string
 }
 
-export default function <T extends Model>(model: T): T {
+export default function<T extends Model>(model: T): T {
   if (!model.__useDomainId) {
     // model.__useDomainId = '1' // ALL TESTS PASS WITH THIS!
     model.__useDomainId = `${Math.random()}`
   }
 
   if (!model.hash) {
-    model.hash = function () {
+    model.hash = function() {
       return hash(this)
     }
   }
@@ -91,7 +91,7 @@ export default function <T extends Model>(model: T): T {
       props = props.concat(Object.getOwnPropertyNames(obj))
     } while ((obj = Object.getPrototypeOf(obj)))
 
-    return props.sort().filter(function (e, i, arr) {
+    return props.sort().filter(function(e, i, arr) {
       if (e != arr[i + 1] && typeof toCheck[e] == 'function') return true
     })
   }
@@ -103,7 +103,7 @@ export default function <T extends Model>(model: T): T {
       props = props.concat(Object.getOwnPropertyNames(obj))
     } while ((obj = Object.getPrototypeOf(obj)))
 
-    return props.sort().filter(function (e, i, arr) {
+    return props.sort().filter(function(e, i, arr) {
       if (e != arr[i + 1] && typeof toCheck[e] !== 'function') return true
     })
   }
@@ -130,10 +130,10 @@ export default function <T extends Model>(model: T): T {
         Object.defineProperty(object, notMethodName, {
           configurable: true,
           enumerable: true,
-          get: function () {
+          get: function() {
             return originalNotMethod
           },
-          set: function (value) {
+          set: function(value) {
             originalNotMethod = value
             eventEmitter.emit(model.__useDomainId)
           }
