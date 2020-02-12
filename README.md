@@ -1,4 +1,4 @@
-# React Domain Hooks
+# Observable
 
 Use React hooks with a domain object. This allows you to separate view logic from interaction logic.
 

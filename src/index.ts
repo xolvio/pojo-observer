@@ -1,3 +1,3 @@
-import useDomain from './useDomain'
+import observe from './observe'
 
-export default useDomain
+export default observe

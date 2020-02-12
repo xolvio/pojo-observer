@@ -1,5 +1,5 @@
 import * as React from 'react'
-import useDomain from './useDomain'
+import observe from './observe'
 import {render, fireEvent} from '@testing-library/react'
 import '@testing-library/jest-dom/extend-expect'
 import {addHash} from './addHash'
@@ -20,7 +20,7 @@ test('add hash internally', () => {
   const model = new TestClass()
 
   function ComponentUsingModel({model}: {model: TestClass}) {
-    const methods = useDomain(model)
+    const methods = observe(model)
 
     return (
       <div>
@@ -33,7 +33,7 @@ test('add hash internally', () => {
   }
 
   function OtherComponentUsingModel({model}: {model: TestClass}) {
-    const methods = useDomain(model)
+    const methods = observe(model)
 
     return (
       <div>
@@ -74,7 +74,7 @@ test('that it can work with objects', () => {
   }
 
   function ComponentUsingModel({model}) {
-    useDomain(model)
+    observe(model)
 
     return (
       <div>
@@ -102,8 +102,8 @@ test('that it can work with multiple objects', () => {
   }
 
   function ComponentUsingModel({model1, model2}) {
-    useDomain(model1)
-    useDomain(model2)
+    observe(model1)
+    observe(model2)
 
     return (
       <div>
@@ -138,7 +138,7 @@ test('that it can work with multiple objects', () => {
   }
 
   function ComponentUsingModel1({model}) {
-    useDomain(model)
+    observe(model)
 
     return (
       <div>
@@ -148,7 +148,7 @@ test('that it can work with multiple objects', () => {
   }
 
   function ComponentUsingModel2({model}) {
-    useDomain(model)
+    observe(model)
 
     return (
       <div>
@@ -184,7 +184,7 @@ test('add hash explicitly', () => {
   }
 
   function ComponentUsingModel({model}: {model: TestClass}) {
-    const methods = useDomain(addHash(model))
+    const methods = observe(addHash(model))
 
     return (
       <div>
@@ -197,7 +197,7 @@ test('add hash explicitly', () => {
   }
 
   function OtherComponentUsingModel({model}: {model: TestClass}) {
-    const methods = useDomain(addHash(model))
+    const methods = observe(addHash(model))
 
     return (
       <div>
@@ -256,7 +256,7 @@ test('have a global model', async () => {
   const model = new TestClass()
 
   const useNumberChanger = () => {
-    return useDomain(model)
+    return observe(model)
   }
 
   function ComponentUsingModel() {
@@ -344,7 +344,7 @@ test('some ddd idea', () => {
   const model = new TestClass()
 
   const useNumberChanger = () => {
-    return useDomain(model)
+    return observe(model)
   }
 
   function ComponentUsingModel() {
@@ -397,6 +397,7 @@ test('some ddd idea', () => {
   expect(model.getCurrent()).toEqual(1)
 
   model.previous()
+
   expect(model.getCurrent()).toEqual(0)
   expect(getByTestId('numberInFirst')).toHaveTextContent('0')
   expect(getByTestId('numberInOther')).toHaveTextContent('0')
@@ -405,7 +406,7 @@ test('some ddd idea', () => {
   // await wait(() => expect(getByTestId('numberInOther')).toHaveTextContent(5))
 })
 
-test('Changing a state of one model should not reload a react component using a different model', () => {
+test('Changing a state of one model should not re-render a react component using a different model', () => {
   const firstModel = {
     foo: 'here',
     mutateMe: () => (firstModel.foo = 'there')
@@ -415,7 +416,7 @@ test('Changing a state of one model should not reload a react component using a 
 
   function ComponentUsingModel() {
     firstComponentRerunTimes++
-    useDomain(firstModel)
+    observe(firstModel)
 
     return (
       <div>
@@ -438,7 +439,7 @@ test('Changing a state of one model should not reload a react component using a 
 
   function ComponentUsingDifferentModel() {
     differentComponentRerunTimes++
-    useDomain(otherModel)
+    observe(otherModel)
 
     return (
       <div>
