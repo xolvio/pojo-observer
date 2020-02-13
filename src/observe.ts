@@ -7,10 +7,10 @@ type Model = {
   hash?: () => string
 }
 
-function id() {
-  return 'xxxxxxxxxxxxxxxx'.replace(/[x]/g, () =>
+const id = () =>
+  'xxxxxxxxxxxxxxxx'.replace(/[x]/g, () =>
     ((Math.floor(new Date().getTime() / 16) + Math.random() * 16) % 16 | 0 & 0x3 | 0x8).toString(16))
-}
+
 
 function getFields(toCheck) {
   let props = []
