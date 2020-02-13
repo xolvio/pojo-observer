@@ -1,7 +1,10 @@
 {
-  "name": "react-domain-hooks",
+  "name": "pojo-observer",
   "author": "Sam Hatoum",
-  "version": "1.1.0",
+  "contributors": [
+    "Lukasz Gandecki"
+  ],
+  "version": "1.0.0",
   "dependencies": {
     "@types/jest": "^25.1.1",
     "object-hash": "^2.0.0",
@@ -11,7 +14,7 @@
     "test:unit:watch": "jest --watch",
     "test:unit": "jest --coverage",
     "test": "npm run test:unit",
-    "prepublish": "npm run build",
+    "prepublish": "rm -rf lib && npm run build",
     "build:watch": "npm run build:js -- --watch",
     "type-check": "tsc --noEmit",
     "type-check:watch": "npm run type-check -- --watch",
@@ -60,7 +63,9 @@
     ]
   },
   "jest": {
-    "testPathIgnorePatterns": ["<rootDir>/lib"]
+    "testPathIgnorePatterns": [
+      "<rootDir>/lib"
+    ]
   },
   "description": "Use React hooks with a domain object. This allows you to separate view logic from interaction logic.",
   "repository": {
