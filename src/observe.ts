@@ -109,6 +109,9 @@ function attachProxyToArray(object, fieldName, id): void {
     },
     set: function(target, property, value): boolean {
       if (property !== '__proto__' && property !== 'length') {
+        if (typeof value === 'object') {
+          attachProxyToProperties(value, id)
+        }
         target[property] = value
         eventEmitter.emit(id)
       }

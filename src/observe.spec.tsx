@@ -553,17 +553,108 @@ test('it should re-render when array values change', () => {
   expect(getByTestId('foo')).toHaveTextContent('one,two')
 })
 
+test('it should re-render for changes in objects added to arrays', () => {
+  const object = {arr: []}
+
+  function Component() {
+    observe(object)
+    return (
+      <div data-testid={'foo'}>
+        {object.arr[0] ? object.arr[0].hello : 'empty'}
+      </div>
+    )
+  }
+
+  const {getByTestId} = render(<Component />)
+
+  expect(getByTestId('foo')).toHaveTextContent('empty')
+
+  object.arr[0] = {
+    hello: 'world'
+  }
+
+  expect(getByTestId('foo')).toHaveTextContent('world')
+  object.arr[0].hello = 'there'
+  expect(getByTestId('foo')).toHaveTextContent('there')
+})
+
 describe.skip('pending edge-cases', () => {
-  test('it should re-render when array values have objects whose internal values change', () => {
+  test.skip('should make top level arrays reactive', () => {
+    const myArray = ['hello']
+
+    function Component() {
+      observe(myArray)
+      return (
+        <div data-testid={'foo'}>{myArray[1] ? myArray[1] : myArray[0]}</div>
+      )
+    }
+
+    const {getByTestId} = render(<Component />)
+
+    expect(getByTestId('foo')).toHaveTextContent('hello')
+
+    myArray.push('world')
+
+    expect(getByTestId('foo')).toHaveTextContent('world')
+  })
+
+  test('it should re-rerender for changes in arrays added to objects', () => {
+    const object = {arr: null}
+
+    function Component() {
+      observe(object)
+      return (
+        <div data-testid={'foo'}>{object.arr ? object.arr[0] : 'empty'}</div>
+      )
+    }
+
+    const {getByTestId} = render(<Component />)
+
+    expect(getByTestId('foo')).toHaveTextContent('empty')
+
+    object.arr = ['world']
+
+    expect(getByTestId('foo')).toHaveTextContent('world')
+  })
+
+  test('it should re-render for changes in arrays added to arrays', () => {
     const object = {arr: []}
 
     function Component() {
       observe(object)
-      return <div data-testid={'foo'}>{object.arr[0].hello}</div>
+      return (
+        <div data-testid={'foo'}>
+          {object.arr[0] && object.arr[0][0] ? object.arr[0][0].hello : 'empty'}
+        </div>
+      )
     }
 
-    object.arr[0] = {
-      hello: 'world'
+    const {getByTestId} = render(<Component />)
+
+    expect(getByTestId('foo')).toHaveTextContent('empty')
+
+    object.arr[0] = []
+    object.arr[0][0] = {hello: 'world'}
+
+    expect(getByTestId('foo')).toHaveTextContent('world')
+    object.arr[0].hello = 'there'
+    expect(getByTestId('foo')).toHaveTextContent('there')
+  })
+
+  test('it should re-render when array values have objects whose internal values change', () => {
+    const object = {
+      arr: [
+        {
+          hello: 'world'
+        }
+      ]
+    }
+
+    function Component() {
+      observe(object)
+      return (
+        <div data-testid={'foo'}>{object.arr[0] && object.arr[0].hello}</div>
+      )
     }
 
     const {getByTestId} = render(<Component />)
