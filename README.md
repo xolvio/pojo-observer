@@ -113,11 +113,19 @@ They work :)
 
 Check out the `observe.spec.tsx` file for details of the cases we've thought of. Can't promise that every single edge case is there, so please report any issues and we'll work on them.
 
+## How is this different to [Redux](https://redux.js.org), [Flux](https://facebook.github.io/flux) and [MobX](https://mobx.js.org)
+
+This library and all the ones mentioned above are ultimately implementations of the [Observer Pattern](https://en.wikipedia.org/wiki/Observer_pattern). (Redux is more of a state management library but it also has an observer when using the Connect method). 
+
+This library is a _minimal_ observer pattern implementation that takes in a POJO as a subject, instruments to observe it, and performs callbacks when the subject has changed. It's not opinionated at all and allows you to use it however you see fit, like choosing the event library to add (or not).
+
+It's also tiny at around ~4k minified. 
+
 ## Why do this?
 
 Having an abstract interaction object has many advantages:
  
-* It can be used by any view layer like React or Vue, or a speech UI, or even a camera gesture UI.
+* The interaction layer is abstract can be used by any view layer like React or Vue, or a speech UI, or even a camera gesture UI. (Though you'd have to bind it yourself as we only support React hooks here)
 * The abstraction makes it easier to reason about the interaction independently of its presentation  
 * Changes can be made to the interaction logic without touching the interface components
 * Allows the practice of the Separation of Concerns and the Single Responsibility Principles
