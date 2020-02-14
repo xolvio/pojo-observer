@@ -4,6 +4,7 @@ import hash from './hash'
 type Model = {
   constructor
   __observableId?: string
+  __proxyAttached?: boolean
   hash?: () => string
 }
 
@@ -15,20 +16,40 @@ const id = () =>
 function getFields(toCheck) {
   let props = []
   let obj = toCheck
+
   do {
     props = props.concat(Object.getOwnPropertyNames(obj))
   } while ((obj = Object.getPrototypeOf(obj)))
   return props.sort().filter((e, i, arr) => (e != arr[i + 1] && typeof toCheck[e] !== 'function'))
 }
 
-function attachProxy(object, fieldName, originalField, id) {
+function attachProxyToField(object, fieldName, originalField, id) {
   Object.defineProperty(object, fieldName, {
     configurable: true,
     enumerable: true,
     get: () => originalField,
     set: (value) => {
+      if (typeof value === 'object') {
+        attachProxyToProperties(value, id)
+      }
       originalField = value
       eventEmitter.emit(id)
+    }
+  })
+}
+
+function attachProxyToArray(object, fieldName, id) {
+  object[fieldName] = new Proxy(object[fieldName], {
+    get: function (target, property) {
+      return target[property];
+    },
+    set: function (target, property, value) {
+
+      if (property !== '__proto__' && property !== 'length') {
+        target[property] = value;
+        eventEmitter.emit(id)
+      }
+      return true;
     }
   })
 }
@@ -38,26 +59,57 @@ function isWritableField(object, fieldName) {
   return fieldDescriptor && fieldDescriptor.writable
 }
 
-function isObjectField(object, fieldName) {
-  return isWritableField(object, fieldName) && typeof object[fieldName] === 'object'
+function isWriteableObjectField(object, fieldName) {
+  return isWritableField(object, fieldName) && typeof object[fieldName] === 'object' && object[fieldName] !== null
 }
 
-function isPrimitiveField(object, fieldName) {
-  return isWritableField(object, fieldName) && typeof object[fieldName] !== 'object'
+function isWriteablePrimitiveField(object, fieldName) {
+  return isWritableField(object, fieldName) && (typeof object[fieldName] !== 'object' || object[fieldName] === null)
+}
+
+function isWriteableArray(object, fieldName) {
+  return isWritableField(object, fieldName) && Array.isArray(object[fieldName])
 }
 
 function recursivelyAttachProxy(originalField, fieldName, object, id) {
-  if (isObjectField(object, fieldName))
-    getFields(object[fieldName]).forEach(nestedFieldName =>
+  if (isWriteablePrimitiveField(object, fieldName)) return attachProxyToField(object, fieldName, originalField, id)
+  if (isWriteableArray(object, fieldName)) return attachProxyToArray(object, fieldName, id)
+  if (isWriteableObjectField(object, fieldName)) {
+    attachProxyToField(object, fieldName, originalField, id)
+    getFields(object[fieldName]).forEach((nestedFieldName) =>
       recursivelyAttachProxy(object[fieldName][nestedFieldName], nestedFieldName, object[fieldName], id))
-
-  if (isPrimitiveField(object, fieldName)) attachProxy(object, fieldName, originalField, id)
+    return
+  }
 }
 
-function attachProxyToProperties<T extends Model>(model: T) {
-  getFields(model).forEach(field => {
-    recursivelyAttachProxy(model[field], field, model, model.__observableId)
-  })
+function attachProxyToProperties<T extends Model>(model: T, id?) {
+  if (!model.__proxyAttached) {
+    model.__proxyAttached = true
+    getFields(model).forEach(field => {
+      recursivelyAttachProxy(model[field], field, model, id ? id : model.__observableId)
+    })
+  }
+}
+
+function addId<T extends Model>(model: T) {
+  if (!model.__observableId) Object.defineProperty(model, '__observableId', {value: id(), writable: false})
+}
+
+function addHash<T extends Model>(model: T) {
+  if (!model.hash) model.hash = () => hash(model)
+}
+
+function reactify<T extends Model>(model: T) {
+  const [, stateChange] = useState(model.hash())
+
+  const stateChangeCallback = useCallback(() => {
+    stateChange(model.hash())
+  }, [model.__observableId])
+
+  useEffect(() => {
+    eventEmitter.on(model.__observableId, stateChangeCallback)
+    return () => eventEmitter.remove(model.__observableId)
+  }, [model.__observableId])
 }
 
 class EventEmitter {
@@ -79,26 +131,9 @@ class EventEmitter {
 
 const eventEmitter = new EventEmitter()
 
-function decorate<T extends Model>(model: T) {
-  if (!model.__observableId) Object.defineProperty(model, '__observableId', {value: id(), writable: false})
-  if (!model.hash) model.hash = () => hash(model)
-}
-
-function reactify<T extends Model>(model: T) {
-  const [, stateChange] = useState(model.hash())
-
-  const stateChangeCallback = useCallback(() => {
-    stateChange(model.hash())
-  }, [model.__observableId])
-
-  useEffect(() => {
-    eventEmitter.on(model.__observableId, stateChangeCallback)
-    return () => eventEmitter.remove(model.__observableId)
-  }, [model.__observableId])
-}
-
 function observe<T extends Model>(model: T): T {
-  decorate(model)
+  addHash(model)
+  addId(model)
   attachProxyToProperties(model)
   reactify(model)
   return model

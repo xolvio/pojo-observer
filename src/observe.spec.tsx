@@ -19,7 +19,7 @@ test('add hash internally', () => {
 
   const model = new TestClass()
 
-  function ComponentUsingModel({model}: {model: TestClass}) {
+  function ComponentUsingModel({model}: { model: TestClass }) {
     const methods = observe(model)
 
     return (
@@ -32,7 +32,7 @@ test('add hash internally', () => {
     )
   }
 
-  function OtherComponentUsingModel({model}: {model: TestClass}) {
+  function OtherComponentUsingModel({model}: { model: TestClass }) {
     const methods = observe(model)
 
     return (
@@ -48,14 +48,14 @@ test('add hash internally', () => {
   function ComponentWithNestedUseOfTheModelObject() {
     return (
       <>
-        <ComponentUsingModel model={model} />
-        <OtherComponentUsingModel model={model} />
+        <ComponentUsingModel model={model}/>
+        <OtherComponentUsingModel model={model}/>
       </>
     )
   }
 
   const {getByTestId, getByText} = render(
-    <ComponentWithNestedUseOfTheModelObject />
+    <ComponentWithNestedUseOfTheModelObject/>
   )
 
   expect(getByTestId('numberInFirst')).toHaveTextContent('2')
@@ -83,7 +83,7 @@ test('that it can work with objects', () => {
     )
   }
 
-  const {getByTestId} = render(<ComponentUsingModel model={obj} />)
+  const {getByTestId} = render(<ComponentUsingModel model={obj}/>)
 
   expect(getByTestId('foo')).toHaveTextContent('here')
   obj.mutateMe()
@@ -114,7 +114,7 @@ test('that it can work with multiple objects', () => {
   }
 
   const {getByTestId} = render(
-    <ComponentUsingModel model1={obj1} model2={obj2} />
+    <ComponentUsingModel model1={obj1} model2={obj2}/>
   )
 
   expect(getByTestId('foo')).toHaveTextContent('here')
@@ -157,8 +157,8 @@ test('that it can work with multiple objects', () => {
     )
   }
 
-  const getByTestId1 = render(<ComponentUsingModel1 model={obj1} />).getByTestId
-  const getByTestId2 = render(<ComponentUsingModel2 model={obj2} />).getByTestId
+  const getByTestId1 = render(<ComponentUsingModel1 model={obj1}/>).getByTestId
+  const getByTestId2 = render(<ComponentUsingModel2 model={obj2}/>).getByTestId
 
   expect(getByTestId1('foo')).toHaveTextContent('here')
   expect(getByTestId2('bar')).toHaveTextContent('pete')
@@ -183,7 +183,7 @@ test('add hash explicitly', () => {
     }
   }
 
-  function ComponentUsingModel({model}: {model: TestClass}) {
+  function ComponentUsingModel({model}: { model: TestClass }) {
     const methods = observe(addHash(model))
 
     return (
@@ -196,7 +196,7 @@ test('add hash explicitly', () => {
     )
   }
 
-  function OtherComponentUsingModel({model}: {model: TestClass}) {
+  function OtherComponentUsingModel({model}: { model: TestClass }) {
     const methods = observe(addHash(model))
 
     return (
@@ -213,14 +213,14 @@ test('add hash explicitly', () => {
     const model = new TestClass()
     return (
       <>
-        <ComponentUsingModel model={model} />
-        <OtherComponentUsingModel model={model} />
+        <ComponentUsingModel model={model}/>
+        <OtherComponentUsingModel model={model}/>
       </>
     )
   }
 
   const {getByTestId, getByText} = render(
-    <ComponentWithNestedUseOfTheModelObject />
+    <ComponentWithNestedUseOfTheModelObject/>
   )
 
   expect(getByTestId('numberInFirst')).toHaveTextContent('2')
@@ -288,14 +288,14 @@ test('have a global model', async () => {
   function ComponentWithNestedUseOfTheModelObject() {
     return (
       <>
-        <ComponentUsingModel />
-        <OtherComponentUsingModel />
+        <ComponentUsingModel/>
+        <OtherComponentUsingModel/>
       </>
     )
   }
 
   const {getByTestId, getByText} = render(
-    <ComponentWithNestedUseOfTheModelObject />
+    <ComponentWithNestedUseOfTheModelObject/>
   )
 
   expect(getByTestId('numberInFirst')).toHaveTextContent('2')
@@ -376,14 +376,14 @@ test('some ddd idea', () => {
   function ComponentWithNestedUseOfTheModelObject() {
     return (
       <>
-        <ComponentUsingModel />
-        <OtherComponentUsingModel />
+        <ComponentUsingModel/>
+        <OtherComponentUsingModel/>
       </>
     )
   }
 
   const {getByTestId, getByText, debug} = render(
-    <ComponentWithNestedUseOfTheModelObject />
+    <ComponentWithNestedUseOfTheModelObject/>
   )
 
   expect(getByTestId('numberInFirst')).toHaveTextContent('2')
@@ -401,9 +401,6 @@ test('some ddd idea', () => {
   expect(model.getCurrent()).toEqual(0)
   expect(getByTestId('numberInFirst')).toHaveTextContent('0')
   expect(getByTestId('numberInOther')).toHaveTextContent('0')
-  debug()
-
-  // await wait(() => expect(getByTestId('numberInOther')).toHaveTextContent(5))
 })
 
 test('Changing a state of one model should not re-render a react component using a different model', () => {
@@ -427,10 +424,10 @@ test('Changing a state of one model should not re-render a react component using
 
   const otherModel = {
     someValue: 'someString',
-    changeMe: function() {
+    changeMe: function () {
       this.someValue = 'otherString'
     },
-    getRerunTimes: function() {
+    getRerunTimes: function () {
       return this.someValue
     }
   }
@@ -448,8 +445,8 @@ test('Changing a state of one model should not re-render a react component using
     )
   }
 
-  const {getByTestId} = render(<ComponentUsingModel />)
-  render(<ComponentUsingDifferentModel />)
+  const {getByTestId} = render(<ComponentUsingModel/>)
+  render(<ComponentUsingDifferentModel/>)
   expect(differentComponentRerunTimes).toEqual(1)
   expect(firstComponentRerunTimes).toEqual(1)
   expect(getByTestId('foo')).toHaveTextContent('here')
@@ -463,3 +460,111 @@ test('Changing a state of one model should not re-render a react component using
   expect(differentComponentRerunTimes).toEqual(2)
   expect(firstComponentRerunTimes).toEqual(2)
 })
+
+test('it should re-render when null fields are set to a value', () => {
+  const object = {field: null}
+
+  function Component() {
+    observe(object)
+    return (<div data-testid={'foo'}>{object.field === null ? 'null' : object.field}</div>
+    )
+  }
+
+  const {getByTestId} = render(<Component/>)
+
+  expect(getByTestId('foo')).toHaveTextContent('null')
+  object.field = 'boo'
+  expect(getByTestId('foo')).toHaveTextContent('boo')
+})
+
+
+test('it should re-render when null fields are set to an object whose value changes', () => {
+  const object = {field: null}
+
+  function Component() {
+    observe(object)
+    return (<div data-testid={'foo'}>{object.field === null ? 'null' : object.field.nested.deep}</div>
+    )
+  }
+
+  const {getByTestId} = render(<Component/>)
+
+  expect(getByTestId('foo')).toHaveTextContent('null')
+  object.field = {
+    nested: {
+      deep: 'value'
+    }
+  }
+  expect(getByTestId('foo')).toHaveTextContent('value')
+  object.field.nested.deep = 'fathoms'
+  expect(getByTestId('foo')).toHaveTextContent('fathoms')
+})
+
+test('it should re-render when multi-level depth fields are set to an object whose value changes', () => {
+  const object = {field: null}
+
+  function Component() {
+    observe(object)
+    return (<div data-testid={'foo'}>{object.field === null ? 'null' : object.field.nested.deep.very}</div>
+    )
+  }
+
+  const {getByTestId} = render(<Component/>)
+
+  expect(getByTestId('foo')).toHaveTextContent('null')
+  object.field = {
+    nested: {
+      deep: 'value'
+    }
+  }
+
+  object.field.nested = {
+    deep: {
+      very: 'deeep'
+    }
+  }
+
+  expect(getByTestId('foo')).toHaveTextContent('deeep')
+  object.field.nested.deep.very = 'fathoms'
+  expect(getByTestId('foo')).toHaveTextContent('fathoms')
+})
+
+
+test('it should re-render when array values change', () => {
+  const object = {arr: ['zero']}
+
+  function Component() {
+    observe(object)
+    return (<div data-testid={'foo'}>{object.arr.toString()}</div>
+    )
+  }
+
+  const {getByTestId} = render(<Component/>)
+
+  object.arr[0] = 'one'
+  expect(getByTestId('foo')).toHaveTextContent('one')
+  object.arr.push('two')
+  expect(getByTestId('foo')).toHaveTextContent('one,two')
+})
+
+test('it should re-render when array values have objects whose internal values change', () => {
+  const object = {arr: []}
+
+  function Component() {
+    observe(object)
+    return (<div data-testid={'foo'}>{object.arr[0].hello}</div>
+    )
+  }
+
+  object.arr[0] = {
+    hello : 'world'
+  }
+
+  const {getByTestId} = render(<Component/>)
+
+  expect(getByTestId('foo')).toHaveTextContent('world')
+  object.arr[0].hello = 'there'
+  expect(getByTestId('foo')).toHaveTextContent('there')
+})
+
+// TODO edge cases for arrays and objects
