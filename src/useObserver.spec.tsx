@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import * as React from 'react'
 import useObserver from './useObserver'
 import {render, fireEvent} from '@testing-library/react'
@@ -20,27 +21,27 @@ test('add hash internally', () => {
   const model = new TestClass()
 
   function ComponentUsingModel({model}: {model: TestClass}) {
-    const methods = useObserver(model)
+    useObserver(model)
 
     return (
       <div>
-        <button onClick={() => methods.previous()}>
+        <button onClick={(): void => model.previous()}>
           Change the numbers in first component
         </button>
-        <div data-testid={'numberInFirst'}>{methods.getCurrent()}</div>
+        <div data-testid={'numberInFirst'}>{model.getCurrent()}</div>
       </div>
     )
   }
 
   function OtherComponentUsingModel({model}: {model: TestClass}) {
-    const methods = useObserver(model)
+    useObserver(model)
 
     return (
       <div>
-        <button onClick={() => methods.previous()}>
+        <button onClick={(): void => model.previous()}>
           Change in the other component
         </button>
-        <div data-testid={'numberInOther'}>{methods.getCurrent()}</div>
+        <div data-testid={'numberInOther'}>{model.getCurrent()}</div>
       </div>
     )
   }
@@ -70,7 +71,7 @@ test('add hash internally', () => {
 test('that it can work with objects', () => {
   const obj = {
     foo: 'here',
-    mutateMe: () => (obj.foo = 'there')
+    mutateMe: (): string => (obj.foo = 'there')
   }
 
   function ComponentUsingModel({model}) {
@@ -93,12 +94,12 @@ test('that it can work with objects', () => {
 test('that it can work with multiple objects', () => {
   const obj1 = {
     foo: 'here',
-    mutateMe: () => (obj1.foo = 'there')
+    mutateMe: (): string => (obj1.foo = 'there')
   }
 
   const obj2 = {
     bar: 'pete',
-    mutateMe: () => (obj2.bar = 'paul')
+    mutateMe: (): string => (obj2.bar = 'paul')
   }
 
   function ComponentUsingModel({model1, model2}) {
@@ -129,12 +130,12 @@ test('that it can work with multiple objects', () => {
 test('that it can work with multiple objects', () => {
   const obj1 = {
     foo: 'here',
-    mutateMe: () => (obj1.foo = 'there')
+    mutateMe: (): string => (obj1.foo = 'there')
   }
 
   const obj2 = {
     bar: 'pete',
-    mutateMe: () => (obj2.bar = 'paul')
+    mutateMe: (): string => (obj2.bar = 'paul')
   }
 
   function ComponentUsingModel1({model}) {
@@ -174,11 +175,11 @@ test('add hash explicitly', () => {
   class TestClass {
     current = 2
 
-    previous() {
+    previous(): void {
       this.current--
     }
 
-    getCurrent() {
+    getCurrent(): number {
       return this.current
     }
   }
@@ -236,19 +237,19 @@ test('have a global model', async () => {
   class TestClass {
     __current = 2
 
-    get current() {
+    get current(): number {
       return this.__current
     }
 
-    set current(value) {
+    set current(value: number) {
       this.__current = value
     }
 
-    previous() {
+    previous(): void {
       this.current--
     }
 
-    getCurrent() {
+    getCurrent(): number {
       return this.current
     }
   }
@@ -320,11 +321,11 @@ test('nested classes', () => {
   class MemberClass {
     __current = 2
 
-    get current() {
+    get current(): number {
       return this.__current
     }
 
-    set current(value) {
+    set current(value: number) {
       this.__current = value
     }
   }
@@ -332,11 +333,11 @@ test('nested classes', () => {
   class TestClass {
     member: MemberClass = new MemberClass()
 
-    previous() {
+    previous(): void {
       this.member.current--
     }
 
-    getCurrent() {
+    getCurrent(): number {
       return this.member.current
     }
   }
@@ -382,7 +383,7 @@ test('nested classes', () => {
     )
   }
 
-  const {getByTestId, getByText, debug} = render(
+  const {getByTestId, getByText} = render(
     <ComponentWithNestedUseOfTheModelObject />
   )
 
@@ -406,7 +407,7 @@ test('nested classes', () => {
 test('Changing a state of one model should not re-render a react component using a different model', () => {
   const firstModel = {
     foo: 'here',
-    mutateMe: () => (firstModel.foo = 'there')
+    mutateMe: (): string => (firstModel.foo = 'there')
   }
 
   let firstComponentRerunTimes = 0
@@ -424,10 +425,10 @@ test('Changing a state of one model should not re-render a react component using
 
   const otherModel = {
     someValue: 'someString',
-    changeMe: function() {
+    changeMe: function(): void {
       this.someValue = 'otherString'
     },
-    getRerunTimes: function() {
+    getRerunTimes: function(): string {
       return this.someValue
     }
   }
@@ -528,11 +529,11 @@ test('it should re-render when multi-level depth fields are set to an object who
 
   object.field.nested = {
     deep: {
-      very: 'deeep'
+      very: 'deeper'
     }
   }
 
-  expect(getByTestId('foo')).toHaveTextContent('deeep')
+  expect(getByTestId('foo')).toHaveTextContent('deeper')
   object.field.nested.deep.very = 'fathoms'
   expect(getByTestId('foo')).toHaveTextContent('fathoms')
 })
@@ -601,11 +602,11 @@ describe.skip('pending edge-cases', () => {
 
     object['field'].nested = {
       deep: {
-        very: 'deeep'
+        very: 'deeper'
       }
     }
 
-    expect(getByTestId('foo')).toHaveTextContent('deeep')
+    expect(getByTestId('foo')).toHaveTextContent('deeper')
     object['field'].nested.deep.very = 'fathoms'
     expect(getByTestId('foo')).toHaveTextContent('fathoms')
   })
