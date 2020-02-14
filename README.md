@@ -7,13 +7,13 @@ A minimalist object observer that works with React hooks.
 Because you you can separate _presentation_ logic from _interaction_ logic.
 
 ## How?
-Create a POJO (Plain Old Javascript Object, or POTO I guess if using Typescript), and have your React component update whenever that POJO changes through an `observe` hook.
+Create a POJO (Plain Old Javascript Object, POTO if using Typescript?), and have your React component update whenever that POJO changes through an `useObserver` hook.
 
 ## Example 
 Say you have this Gallery component:
 
 ```jsx
-import observe from 'pojo-observer'
+import useObserver from 'pojo-observer'
 
 // Ultra thin UI component with presntation logic only. 
 // Note it's up to you to inject the POJO here
@@ -36,7 +36,6 @@ export default function GalleryUI({gallery}) {
 ```
 
 And this POJO:
-
 ```jsx
 export default class Gallery {
   constructor() {
