@@ -8,11 +8,11 @@ test('add hash internally', () => {
   class TestClass {
     current = 2
 
-    previous() {
+    previous(): void {
       this.current--
     }
 
-    getCurrent() {
+    getCurrent(): number {
       return this.current
     }
   }
@@ -316,7 +316,7 @@ test('have a global model', async () => {
   // await wait(() => expect(getByTestId('numberInOther')).toHaveTextContent(5))
 })
 
-test('some ddd idea', () => {
+test('nested classes', () => {
   class MemberClass {
     __current = 2
 
@@ -401,9 +401,6 @@ test('some ddd idea', () => {
   expect(model.getCurrent()).toEqual(0)
   expect(getByTestId('numberInFirst')).toHaveTextContent('0')
   expect(getByTestId('numberInOther')).toHaveTextContent('0')
-  debug()
-
-  // await wait(() => expect(getByTestId('numberInOther')).toHaveTextContent(5))
 })
 
 test('Changing a state of one model should not re-render a react component using a different model', () => {
@@ -462,4 +459,154 @@ test('Changing a state of one model should not re-render a react component using
   otherModel.changeMe()
   expect(differentComponentRerunTimes).toEqual(2)
   expect(firstComponentRerunTimes).toEqual(2)
+})
+
+test('it should re-render when null fields are set to a value', () => {
+  const object = {field: null}
+
+  function Component() {
+    observe(object)
+    return (
+      <div data-testid={'foo'}>
+        {object.field === null ? 'null' : object.field}
+      </div>
+    )
+  }
+
+  const {getByTestId} = render(<Component />)
+
+  expect(getByTestId('foo')).toHaveTextContent('null')
+  object.field = 'boo'
+  expect(getByTestId('foo')).toHaveTextContent('boo')
+})
+
+test('it should re-render when null fields are set to an object whose value changes', () => {
+  const object = {field: null}
+
+  function Component() {
+    observe(object)
+    return (
+      <div data-testid={'foo'}>
+        {object.field === null ? 'null' : object.field.nested.deep}
+      </div>
+    )
+  }
+
+  const {getByTestId} = render(<Component />)
+
+  expect(getByTestId('foo')).toHaveTextContent('null')
+  object.field = {
+    nested: {
+      deep: 'value'
+    }
+  }
+  expect(getByTestId('foo')).toHaveTextContent('value')
+  object.field.nested.deep = 'fathoms'
+  expect(getByTestId('foo')).toHaveTextContent('fathoms')
+})
+
+test('it should re-render when multi-level depth fields are set to an object whose value changes', () => {
+  const object = {field: null}
+
+  function Component() {
+    observe(object)
+    return (
+      <div data-testid={'foo'}>
+        {object.field === null ? 'null' : object.field.nested.deep.very}
+      </div>
+    )
+  }
+
+  const {getByTestId} = render(<Component />)
+
+  expect(getByTestId('foo')).toHaveTextContent('null')
+  object.field = {
+    nested: {
+      deep: 'value'
+    }
+  }
+
+  object.field.nested = {
+    deep: {
+      very: 'deeep'
+    }
+  }
+
+  expect(getByTestId('foo')).toHaveTextContent('deeep')
+  object.field.nested.deep.very = 'fathoms'
+  expect(getByTestId('foo')).toHaveTextContent('fathoms')
+})
+
+test('it should re-render when array values change', () => {
+  const object = {arr: ['zero']}
+
+  function Component() {
+    observe(object)
+    return <div data-testid={'foo'}>{object.arr.toString()}</div>
+  }
+
+  const {getByTestId} = render(<Component />)
+
+  object.arr[0] = 'one'
+  expect(getByTestId('foo')).toHaveTextContent('one')
+  object.arr.push('two')
+  expect(getByTestId('foo')).toHaveTextContent('one,two')
+})
+
+describe.skip('pending edge-cases', () => {
+  test('it should re-render when array values have objects whose internal values change', () => {
+    const object = {arr: []}
+
+    function Component() {
+      observe(object)
+      return <div data-testid={'foo'}>{object.arr[0].hello}</div>
+    }
+
+    object.arr[0] = {
+      hello: 'world'
+    }
+
+    const {getByTestId} = render(<Component />)
+
+    expect(getByTestId('foo')).toHaveTextContent('world')
+    object.arr[0].hello = 'there'
+    expect(getByTestId('foo')).toHaveTextContent('there')
+  })
+
+  test('it should re-render when multi-level depth fields are set to an object whose value changes - new field', () => {
+    const object = {}
+
+    function Component() {
+      observe(object)
+      return (
+        <div data-testid={'foo'}>
+          {object &&
+          object['field'] &&
+          object['field'].nested &&
+          object['field'].nested.deep
+            ? object['field'].nested.deep.very
+            : 'null'}
+        </div>
+      )
+    }
+
+    const {getByTestId} = render(<Component />)
+
+    expect(getByTestId('foo')).toHaveTextContent('null')
+    object['field'] = {
+      nested: {
+        deep: 'value'
+      }
+    }
+
+    object['field'].nested = {
+      deep: {
+        very: 'deeep'
+      }
+    }
+
+    expect(getByTestId('foo')).toHaveTextContent('deeep')
+    object['field'].nested.deep.very = 'fathoms'
+    expect(getByTestId('foo')).toHaveTextContent('fathoms')
+  })
 })

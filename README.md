@@ -107,6 +107,12 @@ You can also add as many other hooks like `useEffect` as you like as follows:
   // ...
 ```
 
+## How about nested objects, arrays, and arrays of objects?
+
+They work :)
+
+Check out the `observe.spec.tsx` file for details of the cases we've thought of. Can't promise that every single edge case is there, so please report any issues and we'll work on them.
+
 ## Why do this?
 
 Having an abstract interaction object has many advantages:
@@ -116,4 +122,3 @@ Having an abstract interaction object has many advantages:
 * Changes can be made to the interaction logic without touching the interface components
 * Allows the practice of the Separation of Concerns and the Single Responsibility Principles
 * Makes it easy to perform behaviour driven development and modeling by example
-
