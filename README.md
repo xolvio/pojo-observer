@@ -78,7 +78,7 @@ Now let's assume we have some async function on that object happening.
   constructor() {   
     // ... truncated for brevity
     
-    setInteraval(this.nextImage, 1000)
+    setInterval(this.nextImage, 1000)
     
     // ... truncated for brevity
 ```
