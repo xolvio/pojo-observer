@@ -4,7 +4,7 @@
   "contributors": [
     "Lukasz Gandecki"
   ],
-  "version": "1.0.1",
+  "version": "1.0.2",
   "dependencies": {
     "@types/jest": "^25.1.1",
     "object-hash": "^2.0.0"

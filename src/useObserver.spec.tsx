@@ -1,5 +1,5 @@
 import * as React from 'react'
-import observe from './observe'
+import useObserver from './useObserver'
 import {render, fireEvent} from '@testing-library/react'
 import '@testing-library/jest-dom/extend-expect'
 import {addHash} from './addHash'
@@ -20,7 +20,7 @@ test('add hash internally', () => {
   const model = new TestClass()
 
   function ComponentUsingModel({model}: {model: TestClass}) {
-    const methods = observe(model)
+    const methods = useObserver(model)
 
     return (
       <div>
@@ -33,7 +33,7 @@ test('add hash internally', () => {
   }
 
   function OtherComponentUsingModel({model}: {model: TestClass}) {
-    const methods = observe(model)
+    const methods = useObserver(model)
 
     return (
       <div>
@@ -74,7 +74,7 @@ test('that it can work with objects', () => {
   }
 
   function ComponentUsingModel({model}) {
-    observe(model)
+    useObserver(model)
 
     return (
       <div>
@@ -102,8 +102,8 @@ test('that it can work with multiple objects', () => {
   }
 
   function ComponentUsingModel({model1, model2}) {
-    observe(model1)
-    observe(model2)
+    useObserver(model1)
+    useObserver(model2)
 
     return (
       <div>
@@ -138,7 +138,7 @@ test('that it can work with multiple objects', () => {
   }
 
   function ComponentUsingModel1({model}) {
-    observe(model)
+    useObserver(model)
 
     return (
       <div>
@@ -148,7 +148,7 @@ test('that it can work with multiple objects', () => {
   }
 
   function ComponentUsingModel2({model}) {
-    observe(model)
+    useObserver(model)
 
     return (
       <div>
@@ -184,7 +184,7 @@ test('add hash explicitly', () => {
   }
 
   function ComponentUsingModel({model}: {model: TestClass}) {
-    const methods = observe(addHash(model))
+    const methods = useObserver(addHash(model))
 
     return (
       <div>
@@ -197,7 +197,7 @@ test('add hash explicitly', () => {
   }
 
   function OtherComponentUsingModel({model}: {model: TestClass}) {
-    const methods = observe(addHash(model))
+    const methods = useObserver(addHash(model))
 
     return (
       <div>
@@ -256,7 +256,7 @@ test('have a global model', async () => {
   const model = new TestClass()
 
   const useNumberChanger = () => {
-    return observe(model)
+    return useObserver(model)
   }
 
   function ComponentUsingModel() {
@@ -344,7 +344,7 @@ test('nested classes', () => {
   const model = new TestClass()
 
   const useNumberChanger = () => {
-    return observe(model)
+    return useObserver(model)
   }
 
   function ComponentUsingModel() {
@@ -413,7 +413,7 @@ test('Changing a state of one model should not re-render a react component using
 
   function ComponentUsingModel() {
     firstComponentRerunTimes++
-    observe(firstModel)
+    useObserver(firstModel)
 
     return (
       <div>
@@ -436,7 +436,7 @@ test('Changing a state of one model should not re-render a react component using
 
   function ComponentUsingDifferentModel() {
     differentComponentRerunTimes++
-    observe(otherModel)
+    useObserver(otherModel)
 
     return (
       <div>
@@ -465,7 +465,7 @@ test('it should re-render when null fields are set to a value', () => {
   const object = {field: null}
 
   function Component() {
-    observe(object)
+    useObserver(object)
     return (
       <div data-testid={'foo'}>
         {object.field === null ? 'null' : object.field}
@@ -484,7 +484,7 @@ test('it should re-render when null fields are set to an object whose value chan
   const object = {field: null}
 
   function Component() {
-    observe(object)
+    useObserver(object)
     return (
       <div data-testid={'foo'}>
         {object.field === null ? 'null' : object.field.nested.deep}
@@ -509,7 +509,7 @@ test('it should re-render when multi-level depth fields are set to an object who
   const object = {field: null}
 
   function Component() {
-    observe(object)
+    useObserver(object)
     return (
       <div data-testid={'foo'}>
         {object.field === null ? 'null' : object.field.nested.deep.very}
@@ -541,7 +541,7 @@ test('it should re-render when array values change', () => {
   const object = {arr: ['zero']}
 
   function Component() {
-    observe(object)
+    useObserver(object)
     return <div data-testid={'foo'}>{object.arr.toString()}</div>
   }
 
@@ -558,7 +558,7 @@ describe.skip('pending edge-cases', () => {
     const object = {arr: []}
 
     function Component() {
-      observe(object)
+      useObserver(object)
       return <div data-testid={'foo'}>{object.arr[0].hello}</div>
     }
 
@@ -577,7 +577,7 @@ describe.skip('pending edge-cases', () => {
     const object = {}
 
     function Component() {
-      observe(object)
+      useObserver(object)
       return (
         <div data-testid={'foo'}>
           {object &&

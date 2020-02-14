@@ -166,11 +166,11 @@ function decorate<T extends Model>(model: T): void {
   addId(model)
 }
 
-function observe<T extends Model>(model: T): T {
+function useObserver<T extends Model>(model: T): T {
   decorate(model)
   attachProxyToProperties(model)
   reactify(model)
   return model
 }
 
-export default observe
+export default useObserver

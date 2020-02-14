@@ -19,13 +19,15 @@ import observe from 'pojo-observer'
 // Note it's up to you to inject the POJO here
 export default function GalleryUI({gallery}) {
 
-  // use the observe hook at the top of your component just like you use any other React hook
-  observe(gallery)
+  // use the observer hook at the top of your component just like any other React hook
+  useObserver(gallery)
   
   return (
     <>
       <h5>Component</h5>
+      // Changes in the gallery object will be updated here
       <p>Image = [{gallery.currentImage()}]</p>
+      // act directly on the injected object
       <button onClick={gallery.previousImage}>Previous Image</button> 
       <button onClick={gallery.nextImage}>Next Image</button>
     </>
@@ -70,6 +72,8 @@ If the values inside the POJO do not change, the `observe` hook will not re-rend
 
 This is achieved internally by using `setState` with a `hash` of the POJO. You can see this in action by trying to repeatedly click the "Previous Image" button. The `previousImage` command in the `Gallery` will stop changing the `currentImage` when it gets to 0, and since the values inside the POJO are no longer changing, the `hash` method on the object ensures that the React component will not re-render.
 
+Bonus: You can test the heck out of the interaction now without having to mess with any UI testing libraries.
+
 ### Asynchrony 
 Now let's assume we have some async function on that object happening. 
 
@@ -83,7 +87,6 @@ Now let's assume we have some async function on that object happening.
     // ... truncated for brevity
 ```
 Yes yes, never put a setInterval in a constructor. But say you have an external event that updates the model, well, the React component will update. Sweet!
-
 
 ### Using Other Hooks
 You can also add as many other hooks like `useEffect` as you like as follows:
@@ -108,13 +111,11 @@ You can also add as many other hooks like `useEffect` as you like as follows:
 ```
 
 ## How about nested objects, arrays, and arrays of objects?
-
 They work :)
 
 Check out the `observe.spec.tsx` file for details of the cases we've thought of. Can't promise that every single edge case is there, so please report any issues and we'll work on them.
 
 ## How is this different to [Redux](https://redux.js.org), [Flux](https://facebook.github.io/flux) and [MobX](https://mobx.js.org)
-
 This library and all the ones mentioned above are ultimately implementations of the [Observer Pattern](https://en.wikipedia.org/wiki/Observer_pattern). (Redux is more of a state management library but it also has an observer when using the Connect method). 
 
 This library is a _minimal_ observer pattern implementation that takes in a POJO as a subject, instruments to observe it, and performs callbacks when the subject has changed. It's not opinionated at all and allows you to use it however you see fit, like choosing the event library to add (or not).
@@ -122,7 +123,6 @@ This library is a _minimal_ observer pattern implementation that takes in a POJO
 It's also tiny at around ~4k minified. 
 
 ## Why do this?
-
 Having an abstract interaction object has many advantages:
  
 * The interaction layer is abstract can be used by any view layer like React or Vue, or a speech UI, or even a camera gesture UI. (Though you'd have to bind it yourself as we only support React hooks here)

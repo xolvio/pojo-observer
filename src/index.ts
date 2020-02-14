@@ -1,3 +1,3 @@
-import observe from './observe'
+import useObserver from './useObserver'
 
-export default observe
+export default useObserver
