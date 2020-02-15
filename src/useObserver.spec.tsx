@@ -313,8 +313,6 @@ test('have a global model', async () => {
   expect(model.getCurrent()).toEqual(0)
   expect(getByTestId('numberInFirst')).toHaveTextContent('0')
   expect(getByTestId('numberInOther')).toHaveTextContent('0')
-
-  // await wait(() => expect(getByTestId('numberInOther')).toHaveTextContent(5))
 })
 
 test('nested classes', () => {
@@ -610,4 +608,74 @@ describe.skip('pending edge-cases', () => {
     object['field'].nested.deep.very = 'fathoms'
     expect(getByTestId('foo')).toHaveTextContent('fathoms')
   })
+})
+
+test('unmounting one component does not cause other components to be unsubscribed', () => {
+  class TestClass {
+    current = 5
+
+    previous(): void {
+      this.current--
+    }
+  }
+
+  const model = new TestClass()
+
+  function ComponentUsingModel() {
+    const methods = useObserver(model)
+
+    return (
+      <div>
+        <button onClick={() => methods.previous()}>
+          Change the numbers in first component
+        </button>
+        <div data-testid={'numberInFirst'}>{methods.current}</div>
+      </div>
+    )
+  }
+
+  function OtherComponentUsingModel() {
+    const methods = useObserver(model)
+
+    return (
+      <div>
+        <button onClick={() => methods.previous()}>
+          Change in the other component
+        </button>
+        <div data-testid={'numberInOther'}>{methods.current}</div>
+      </div>
+    )
+  }
+
+  function ComponentWithNestedUseOfTheModelObject() {
+    useObserver(model)
+    return (
+      <>
+        <ComponentUsingModel />
+        {model.current > 3 ? <OtherComponentUsingModel /> : null}
+      </>
+    )
+  }
+
+  const {getByTestId, getByText} = render(
+    <ComponentWithNestedUseOfTheModelObject />
+  )
+
+  expect(getByTestId('numberInFirst')).toHaveTextContent('5')
+  expect(getByTestId('numberInOther')).toHaveTextContent('5')
+  expect(model.current).toEqual(5)
+
+  fireEvent.click(getByText('Change the numbers in first component'))
+
+  expect(getByTestId('numberInFirst')).toHaveTextContent('4')
+  expect(getByTestId('numberInOther')).toHaveTextContent('4')
+  expect(model.current).toEqual(4)
+
+  model.previous()
+  expect(model.current).toEqual(3)
+  expect(getByTestId('numberInFirst')).toHaveTextContent('3')
+
+  model.previous()
+  expect(model.current).toEqual(2)
+  expect(getByTestId('numberInFirst')).toHaveTextContent('2')
 })
