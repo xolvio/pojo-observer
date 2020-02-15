@@ -4,19 +4,19 @@ import hash from './hash'
 class EventEmitter {
   callbacks = {}
 
-  on(eventId, subscriptionId, cb): void {
+  on(eventId, subscriptionId, cb) {
     this.callbacks[eventId] = this.callbacks[eventId] || []
     cb.subscriptionId = subscriptionId
     this.callbacks[eventId].push(cb)
   }
 
-  remove(eventId, subscriptionId): void {
+  remove(eventId, subscriptionId) {
     this.callbacks[eventId] = this.callbacks[eventId].filter(
       c => c.subscriptionId !== subscriptionId
     )
   }
 
-  emit(eventId): void {
+  emit(eventId) {
     this.callbacks[eventId] && this.callbacks[eventId].forEach(cb => cb())
   }
 }
@@ -39,7 +39,7 @@ const id = (): string =>
     ).toString(16)
   )
 
-function getFieldNames(toCheck): string[] {
+function getFieldNames(toCheck) {
   let props = []
   let obj = toCheck
 
@@ -51,12 +51,12 @@ function getFieldNames(toCheck): string[] {
     .filter((e, i, arr) => e != arr[i + 1] && typeof toCheck[e] !== 'function')
 }
 
-function isWritableField(object, fieldName): boolean {
+function isWritableField(object, fieldName) {
   const fieldDescriptor = Object.getOwnPropertyDescriptor(object, fieldName)
   return fieldDescriptor && fieldDescriptor.writable
 }
 
-function isWriteableObjectField(object, fieldName): boolean {
+function isWriteableObjectField(object, fieldName) {
   return (
     isWritableField(object, fieldName) &&
     typeof object[fieldName] === 'object' &&
@@ -64,22 +64,18 @@ function isWriteableObjectField(object, fieldName): boolean {
   )
 }
 
-function isWriteablePrimitiveField(object, fieldName): boolean {
+function isWriteablePrimitiveField(object, fieldName) {
   return (
     isWritableField(object, fieldName) &&
     (typeof object[fieldName] !== 'object' || object[fieldName] === null)
   )
 }
 
-function isWriteableArray(object, fieldName): boolean {
+function isWriteableArray(object, fieldName) {
   return isWritableField(object, fieldName) && Array.isArray(object[fieldName])
 }
 
-function attachProxyToProperties<T extends Model>(
-  model: T,
-  callback: Function,
-  id?
-): void {
+function attachProxyToProperties(model: Model, callback: Function, id?) {
   if (!model.__proxyAttached) {
     model.__proxyAttached = true
     getFieldNames(model).forEach(field => {
@@ -95,13 +91,7 @@ function attachProxyToProperties<T extends Model>(
   }
 }
 
-function attachProxyToField(
-  object,
-  fieldName,
-  originalField,
-  callback,
-  id
-): void {
+function attachProxyToField(object, fieldName, originalField, callback, id) {
   Object.defineProperty(object, fieldName, {
     configurable: true,
     enumerable: true,
@@ -116,12 +106,12 @@ function attachProxyToField(
   })
 }
 
-function attachProxyToArray(object, fieldName, callback, id): void {
+function attachProxyToArray(object, fieldName, callback, id) {
   object[fieldName] = new Proxy(object[fieldName], {
-    get: function(target, property): object {
+    get: function(target, property) {
       return target[property]
     },
-    set: function(target, property, value): boolean {
+    set: function(target, property, value) {
       if (property !== '__proto__' && property !== 'length') {
         if (typeof value === 'object') {
           attachProxyToProperties(value, callback, id)
@@ -140,7 +130,7 @@ function recursivelyAttachProxy(
   object,
   id,
   callback: Function
-): void {
+) {
   if (isWriteablePrimitiveField(object, fieldName))
     return attachProxyToField(object, fieldName, originalField, callback, id)
   if (isWriteableArray(object, fieldName))
@@ -160,7 +150,7 @@ function recursivelyAttachProxy(
   }
 }
 
-function addId<T extends Model>(model: T): void {
+function addId(model: Model) {
   if (!model.__observableId)
     Object.defineProperty(model, '__observableId', {
       value: id(),
@@ -168,8 +158,8 @@ function addId<T extends Model>(model: T): void {
     })
 }
 
-function addHash<T extends Model>(model: T): void {
-  if (!model.hash) model.hash = (): string => hash(model)
+function addHash(model: Model) {
+  if (!model.hash) model.hash = () => hash(model)
 }
 
 let currentId = 0
@@ -182,7 +172,7 @@ export function useUniqueId() {
   return 'subscription_id' + ref.current
 }
 
-function reactify<T extends Model>(model: T): Function {
+function reactify(model: Model) {
   const subscriptionId = useUniqueId()
   const [, stateChange] = useState(model.hash())
 
@@ -192,12 +182,12 @@ function reactify<T extends Model>(model: T): Function {
 
   useEffect(() => {
     eventEmitter.on(model.__observableId, subscriptionId, stateChangeCallback)
-    return (): void => eventEmitter.remove(model.__observableId, subscriptionId)
+    return () => eventEmitter.remove(model.__observableId, subscriptionId)
   }, [model.__observableId, subscriptionId])
-  return (): void => eventEmitter.emit(model.__observableId)
+  return () => eventEmitter.emit(model.__observableId)
 }
 
-function decorate<T extends Model>(model: T): void {
+function decorate(model: Model) {
   addHash(model)
   addId(model)
 }
@@ -209,7 +199,7 @@ function useObserver<T extends Model>(model: T): T {
   return model
 }
 
-export function pureObserver(model: Model, callback: Function): Model {
+export function pureObserver<T extends Model>(model: T, callback: Function): T {
   decorate(model)
   attachProxyToProperties(model, callback)
   return model
