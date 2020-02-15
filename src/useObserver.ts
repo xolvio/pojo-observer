@@ -1,16 +1,19 @@
-import {useCallback, useEffect, useState} from 'react'
+import {useCallback, useEffect, useRef, useState} from 'react'
 import hash from './hash'
 
 class EventEmitter {
   callbacks = {}
 
-  on(eventId, cb): void {
+  on(eventId, subscriptionId, cb): void {
     this.callbacks[eventId] = this.callbacks[eventId] || []
+    cb.subscriptionId = subscriptionId
     this.callbacks[eventId].push(cb)
   }
 
-  remove(eventId): void {
-    delete this.callbacks[eventId]
+  remove(eventId, subscriptionId): void {
+    this.callbacks[eventId] = this.callbacks[eventId].filter(
+      c => c.subscriptionId !== subscriptionId
+    )
   }
 
   emit(eventId): void {
@@ -169,7 +172,18 @@ function addHash<T extends Model>(model: T): void {
   if (!model.hash) model.hash = (): string => hash(model)
 }
 
+let currentId = 0
+
+export function useUniqueId() {
+  const ref = useRef(0)
+  if (ref.current === 0) {
+    ref.current = ++currentId
+  }
+  return 'subscription_id' + ref.current
+}
+
 function reactify<T extends Model>(model: T): Function {
+  const subscriptionId = useUniqueId()
   const [, stateChange] = useState(model.hash())
 
   const stateChangeCallback = useCallback(() => {
@@ -177,9 +191,9 @@ function reactify<T extends Model>(model: T): Function {
   }, [model.__observableId])
 
   useEffect(() => {
-    eventEmitter.on(model.__observableId, stateChangeCallback)
-    return (): void => eventEmitter.remove(model.__observableId)
-  }, [model.__observableId])
+    eventEmitter.on(model.__observableId, subscriptionId, stateChangeCallback)
+    return (): void => eventEmitter.remove(model.__observableId, subscriptionId)
+  }, [model.__observableId, subscriptionId])
   return (): void => eventEmitter.emit(model.__observableId)
 }
 
