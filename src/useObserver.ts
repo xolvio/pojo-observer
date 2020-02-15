@@ -72,7 +72,11 @@ function isWriteableArray(object, fieldName): boolean {
   return isWritableField(object, fieldName) && Array.isArray(object[fieldName])
 }
 
-function attachProxyToProperties<T extends Model>(model: T, id?): void {
+function attachProxyToProperties<T extends Model>(
+  model: T,
+  callback: Function,
+  id?
+): void {
   if (!model.__proxyAttached) {
     model.__proxyAttached = true
     getFieldNames(model).forEach(field => {
@@ -81,55 +85,72 @@ function attachProxyToProperties<T extends Model>(model: T, id?): void {
         model[field],
         field,
         model,
-        id ? id : model.__observableId
+        id ? id : model.__observableId,
+        callback
       )
     })
   }
 }
 
-function attachProxyToField(object, fieldName, originalField, id): void {
+function attachProxyToField(
+  object,
+  fieldName,
+  originalField,
+  callback,
+  id
+): void {
   Object.defineProperty(object, fieldName, {
     configurable: true,
     enumerable: true,
     get: () => originalField,
     set: value => {
       if (typeof value === 'object') {
-        attachProxyToProperties(value, id)
+        attachProxyToProperties(value, callback, id)
       }
       originalField = value
-      eventEmitter.emit(id)
+      callback()
     }
   })
 }
 
-function attachProxyToArray(object, fieldName, id): void {
+function attachProxyToArray(object, fieldName, callback, id): void {
   object[fieldName] = new Proxy(object[fieldName], {
     get: function(target, property): object {
       return target[property]
     },
     set: function(target, property, value): boolean {
       if (property !== '__proto__' && property !== 'length') {
+        if (typeof value === 'object') {
+          attachProxyToProperties(value, callback, id)
+        }
         target[property] = value
-        eventEmitter.emit(id)
+        callback()
       }
       return true
     }
   })
 }
 
-function recursivelyAttachProxy(originalField, fieldName, object, id): void {
+function recursivelyAttachProxy(
+  originalField,
+  fieldName,
+  object,
+  id,
+  callback: Function
+): void {
   if (isWriteablePrimitiveField(object, fieldName))
-    return attachProxyToField(object, fieldName, originalField, id)
+    return attachProxyToField(object, fieldName, originalField, callback, id)
   if (isWriteableArray(object, fieldName))
-    return attachProxyToArray(object, fieldName, id)
+    return attachProxyToArray(object, fieldName, callback, id)
   if (isWriteableObjectField(object, fieldName)) {
-    attachProxyToField(object, fieldName, originalField, id)
+    attachProxyToField(object, fieldName, originalField, callback, id)
     getFieldNames(object[fieldName]).forEach(nestedFieldName =>
       recursivelyAttachProxy(
         object[fieldName][nestedFieldName],
         nestedFieldName,
         object[fieldName],
-        id
+        id,
+        callback
       )
     )
     return
@@ -148,7 +169,7 @@ function addHash<T extends Model>(model: T): void {
   if (!model.hash) model.hash = (): string => hash(model)
 }
 
-function reactify<T extends Model>(model: T): void {
+function reactify<T extends Model>(model: T): Function {
   const [, stateChange] = useState(model.hash())
 
   const stateChangeCallback = useCallback(() => {
@@ -159,6 +180,7 @@ function reactify<T extends Model>(model: T): void {
     eventEmitter.on(model.__observableId, stateChangeCallback)
     return (): void => eventEmitter.remove(model.__observableId)
   }, [model.__observableId])
+  return (): void => eventEmitter.emit(model.__observableId)
 }
 
 function decorate<T extends Model>(model: T): void {
@@ -168,8 +190,14 @@ function decorate<T extends Model>(model: T): void {
 
 function useObserver<T extends Model>(model: T): T {
   decorate(model)
-  attachProxyToProperties(model)
-  reactify(model)
+  const callback = reactify(model)
+  attachProxyToProperties(model, callback)
+  return model
+}
+
+export function pureObserver(model: Model, callback: Function): Model {
+  decorate(model)
+  attachProxyToProperties(model, callback)
   return model
 }
 
