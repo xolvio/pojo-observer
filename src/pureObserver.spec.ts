@@ -21,9 +21,9 @@ test('that it can work with multiple objects, no react', () => {
     bar: 'pete',
     mutateMe: () => (obj2.bar = 'paul')
   }
-  const obj1Callback = td.func() as () => void
+  const obj1Callback = td.func()
   pureObserver(obj1, obj1Callback)
-  const obj2Callback = td.func() as () => void
+  const obj2Callback = td.func()
   pureObserver(obj2, obj2Callback)
 
   obj1.mutateMe()

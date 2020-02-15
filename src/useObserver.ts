@@ -74,7 +74,7 @@ function isWriteableArray(object, fieldName): boolean {
 
 function attachProxyToProperties<T extends Model>(
   model: T,
-  callback: () => void,
+  callback: Function,
   id?
 ): void {
   if (!model.__proxyAttached) {
@@ -136,7 +136,7 @@ function recursivelyAttachProxy(
   fieldName,
   object,
   id,
-  callback: () => void
+  callback: Function
 ): void {
   if (isWriteablePrimitiveField(object, fieldName))
     return attachProxyToField(object, fieldName, originalField, callback, id)
@@ -169,7 +169,7 @@ function addHash<T extends Model>(model: T): void {
   if (!model.hash) model.hash = (): string => hash(model)
 }
 
-function reactify<T extends Model>(model: T): () => void {
+function reactify<T extends Model>(model: T): Function {
   const [, stateChange] = useState(model.hash())
 
   const stateChangeCallback = useCallback(() => {
@@ -195,7 +195,7 @@ function useObserver<T extends Model>(model: T): T {
   return model
 }
 
-export function pureObserver(model: Model, callback: () => void): Model {
+export function pureObserver(model: Model, callback: Function): Model {
   decorate(model)
   attachProxyToProperties(model, callback)
   return model
