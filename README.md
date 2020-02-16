@@ -145,9 +145,11 @@ From DDD
 * Use repositories to talk to back-ends
 
 From Clean Architecture
-* UI layer - components that shows provided values and invoke actions onto a controller
+* UI layer - components that show provided values and invoke actions onto a controller
 * Controller layer - Takes actions and translates them into something the use-case interactor can deal with  
 * Use-case Interactor layer - This is basically either an aggregate root or a service from DDD
+
+_Side note: It may make sense to have the UI layer and the Controller live in the same file, even though they are different layers, as long as the separation of concerns is applied._ 
 
 But in order to do any of the above, one has to completely decouple the presentation layer from the layers beneath. And while it's possible to do so with the right coding practices, we found there was a lot of boilerplate in binding data to the UI. If we could somehow just focus on the interaction modeling and then plug a UI on top that requires minimal boilerplate code and is highly decoupled, that would allow us to move fast and to have highly testable code. Moreover, it would not lock us in to any framework. 
 
