@@ -75,11 +75,7 @@ function isWriteableArray(object, fieldName): boolean {
   return isWritableField(object, fieldName) && Array.isArray(object[fieldName])
 }
 
-function attachProxyToProperties<T extends Model>(
-  model: T,
-  callback: Function,
-  id?
-): void {
+function attachProxyToProperties(model: Model, callback: Function, id?): void {
   if (!model.__proxyAttached) {
     model.__proxyAttached = true
     getFieldNames(model).forEach(field => {
@@ -160,7 +156,7 @@ function recursivelyAttachProxy(
   }
 }
 
-function addId<T extends Model>(model: T): void {
+function addId(model: Model): void {
   if (!model.__observableId)
     Object.defineProperty(model, '__observableId', {
       value: id(),
@@ -168,13 +164,13 @@ function addId<T extends Model>(model: T): void {
     })
 }
 
-function addHash<T extends Model>(model: T): void {
+function addHash(model: Model): void {
   if (!model.hash) model.hash = (): string => hash(model)
 }
 
 let currentId = 0
 
-export function useUniqueId() {
+export function useUniqueId(): string {
   const ref = useRef(0)
   if (ref.current === 0) {
     ref.current = ++currentId
@@ -182,7 +178,7 @@ export function useUniqueId() {
   return 'subscription_id' + ref.current
 }
 
-function reactify<T extends Model>(model: T): Function {
+function reactify(model: Model): Function {
   const subscriptionId = useUniqueId()
   const [, stateChange] = useState(model.hash())
 
@@ -197,7 +193,7 @@ function reactify<T extends Model>(model: T): Function {
   return (): void => eventEmitter.emit(model.__observableId)
 }
 
-function decorate<T extends Model>(model: T): void {
+function decorate(model: Model): void {
   addHash(model)
   addId(model)
 }
@@ -209,7 +205,7 @@ function useObserver<T extends Model>(model: T): T {
   return model
 }
 
-export function pureObserver(model: Model, callback: Function): Model {
+export function pureObserver<T extends Model>(model: T, callback: Function): T {
   decorate(model)
   attachProxyToProperties(model, callback)
   return model
