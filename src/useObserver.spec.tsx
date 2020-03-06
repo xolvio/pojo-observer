@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import * as React from 'react'
 import useObserver from './useObserver'
-import {render, fireEvent} from '@testing-library/react'
+import {render, act} from '@testing-library/react'
 import '@testing-library/jest-dom/extend-expect'
 import {addHash} from './addHash'
 
@@ -18,7 +18,7 @@ test('add hash internally', () => {
     }
   }
 
-  const model = new TestClass()
+  const obj = new TestClass()
 
   function ComponentUsingModel({model}: {model: TestClass}) {
     useObserver(model)
@@ -49,8 +49,8 @@ test('add hash internally', () => {
   function ComponentWithNestedUseOfTheModelObject() {
     return (
       <>
-        <ComponentUsingModel model={model} />
-        <OtherComponentUsingModel model={model} />
+        <ComponentUsingModel model={obj} />
+        <OtherComponentUsingModel model={obj} />
       </>
     )
   }
@@ -62,7 +62,7 @@ test('add hash internally', () => {
   expect(getByTestId('numberInFirst')).toHaveTextContent('2')
   expect(getByTestId('numberInOther')).toHaveTextContent('2')
 
-  fireEvent.click(getByText('Change the numbers in first component'))
+  getByText('Change the numbers in first component').click()
 
   expect(getByTestId('numberInFirst')).toHaveTextContent('1')
   expect(getByTestId('numberInOther')).toHaveTextContent('1')
@@ -79,7 +79,7 @@ test('that it can work with objects', () => {
 
     return (
       <div>
-        <div data-testid={'foo'}>{obj.foo}</div>
+        <div data-testid={'foo'}>{model.foo}</div>
       </div>
     )
   }
@@ -87,7 +87,9 @@ test('that it can work with objects', () => {
   const {getByTestId} = render(<ComponentUsingModel model={obj} />)
 
   expect(getByTestId('foo')).toHaveTextContent('here')
-  obj.mutateMe()
+  act(() => {
+    obj.mutateMe()
+  })
   expect(getByTestId('foo')).toHaveTextContent('there')
 })
 
@@ -108,8 +110,8 @@ test('that it can work with multiple objects', () => {
 
     return (
       <div>
-        <div data-testid={'foo'}>{obj1.foo}</div>
-        <div data-testid={'bar'}>{obj2.bar}</div>
+        <div data-testid={'foo'}>{model1.foo}</div>
+        <div data-testid={'bar'}>{model2.bar}</div>
       </div>
     )
   }
@@ -120,10 +122,14 @@ test('that it can work with multiple objects', () => {
 
   expect(getByTestId('foo')).toHaveTextContent('here')
   expect(getByTestId('bar')).toHaveTextContent('pete')
-  obj1.mutateMe()
+  act(() => {
+    obj1.mutateMe()
+  })
   expect(getByTestId('foo')).toHaveTextContent('there')
   expect(getByTestId('bar')).toHaveTextContent('pete')
-  obj2.mutateMe()
+  act(() => {
+    obj2.mutateMe()
+  })
   expect(getByTestId('bar')).toHaveTextContent('paul')
 })
 
@@ -143,7 +149,7 @@ test('that it can work with multiple objects', () => {
 
     return (
       <div>
-        <div data-testid={'foo'}>{obj1.foo}</div>
+        <div data-testid={'foo'}>{model.foo}</div>
       </div>
     )
   }
@@ -153,7 +159,7 @@ test('that it can work with multiple objects', () => {
 
     return (
       <div>
-        <div data-testid={'bar'}>{obj2.bar}</div>
+        <div data-testid={'bar'}>{model.bar}</div>
       </div>
     )
   }
@@ -163,10 +169,14 @@ test('that it can work with multiple objects', () => {
 
   expect(getByTestId1('foo')).toHaveTextContent('here')
   expect(getByTestId2('bar')).toHaveTextContent('pete')
-  obj1.mutateMe()
+  act(() => {
+    obj1.mutateMe()
+  })
   expect(getByTestId1('foo')).toHaveTextContent('there')
   expect(getByTestId2('bar')).toHaveTextContent('pete')
-  obj2.mutateMe()
+  act(() => {
+    obj2.mutateMe()
+  })
   expect(getByTestId1('foo')).toHaveTextContent('there')
   expect(getByTestId2('bar')).toHaveTextContent('paul')
 })
@@ -227,7 +237,7 @@ test('add hash explicitly', () => {
   expect(getByTestId('numberInFirst')).toHaveTextContent('2')
   expect(getByTestId('numberInOther')).toHaveTextContent('2')
 
-  fireEvent.click(getByText('Change the numbers in first component'))
+  getByText('Change the numbers in first component').click()
 
   expect(getByTestId('numberInFirst')).toHaveTextContent('1')
   expect(getByTestId('numberInOther')).toHaveTextContent('1')
@@ -303,13 +313,15 @@ test('have a global model', async () => {
   expect(getByTestId('numberInOther')).toHaveTextContent('2')
   expect(model.getCurrent()).toEqual(2)
 
-  fireEvent.click(getByText('Change the numbers in first component'))
+  getByText('Change the numbers in first component').click()
 
   expect(getByTestId('numberInFirst')).toHaveTextContent('1')
   expect(getByTestId('numberInOther')).toHaveTextContent('1')
   expect(model.getCurrent()).toEqual(1)
 
-  model.previous()
+  act(() => {
+    model.previous()
+  })
   expect(model.getCurrent()).toEqual(0)
   expect(getByTestId('numberInFirst')).toHaveTextContent('0')
   expect(getByTestId('numberInOther')).toHaveTextContent('0')
@@ -389,14 +401,15 @@ test('nested classes', () => {
   expect(getByTestId('numberInOther')).toHaveTextContent('2')
   expect(model.getCurrent()).toEqual(2)
 
-  fireEvent.click(getByText('Change the numbers in first component'))
+  getByText('Change the numbers in first component').click()
 
   expect(getByTestId('numberInFirst')).toHaveTextContent('1')
   expect(getByTestId('numberInOther')).toHaveTextContent('1')
   expect(model.getCurrent()).toEqual(1)
 
-  model.previous()
-
+  act(() => {
+    model.previous()
+  })
   expect(model.getCurrent()).toEqual(0)
   expect(getByTestId('numberInFirst')).toHaveTextContent('0')
   expect(getByTestId('numberInOther')).toHaveTextContent('0')
@@ -450,12 +463,16 @@ test('Changing a state of one model should not re-render a react component using
   expect(firstComponentRerunTimes).toEqual(1)
   expect(getByTestId('foo')).toHaveTextContent('here')
 
-  firstModel.mutateMe()
+  act(() => {
+    firstModel.mutateMe()
+  })
   expect(getByTestId('foo')).toHaveTextContent('there')
   expect(firstComponentRerunTimes).toEqual(2)
   expect(differentComponentRerunTimes).toEqual(1)
 
-  otherModel.changeMe()
+  act(() => {
+    otherModel.changeMe()
+  })
   expect(differentComponentRerunTimes).toEqual(2)
   expect(firstComponentRerunTimes).toEqual(2)
 })
@@ -475,7 +492,9 @@ test('it should re-render when null fields are set to a value', () => {
   const {getByTestId} = render(<Component />)
 
   expect(getByTestId('foo')).toHaveTextContent('null')
-  object.field = 'boo'
+  act(() => {
+    object.field = 'boo'
+  })
   expect(getByTestId('foo')).toHaveTextContent('boo')
 })
 
@@ -494,13 +513,17 @@ test('it should re-render when null fields are set to an object whose value chan
   const {getByTestId} = render(<Component />)
 
   expect(getByTestId('foo')).toHaveTextContent('null')
-  object.field = {
-    nested: {
-      deep: 'value'
+  act(() => {
+    object.field = {
+      nested: {
+        deep: 'value'
+      }
     }
-  }
+  })
   expect(getByTestId('foo')).toHaveTextContent('value')
-  object.field.nested.deep = 'fathoms'
+  act(() => {
+    object.field.nested.deep = 'fathoms'
+  })
   expect(getByTestId('foo')).toHaveTextContent('fathoms')
 })
 
@@ -519,20 +542,25 @@ test('it should re-render when multi-level depth fields are set to an object who
   const {getByTestId} = render(<Component />)
 
   expect(getByTestId('foo')).toHaveTextContent('null')
-  object.field = {
-    nested: {
-      deep: 'value'
+  act(() => {
+    object.field = {
+      nested: {
+        deep: 'value'
+      }
     }
-  }
-
-  object.field.nested = {
-    deep: {
-      very: 'deeper'
+  })
+  act(() => {
+    object.field.nested = {
+      deep: {
+        very: 'deeper'
+      }
     }
-  }
+  })
 
   expect(getByTestId('foo')).toHaveTextContent('deeper')
-  object.field.nested.deep.very = 'fathoms'
+  act(() => {
+    object.field.nested.deep.very = 'fathoms'
+  })
   expect(getByTestId('foo')).toHaveTextContent('fathoms')
 })
 
@@ -546,9 +574,13 @@ test('it should re-render when array values change', () => {
 
   const {getByTestId} = render(<Component />)
 
-  object.arr[0] = 'one'
+  act(() => {
+    object.arr[0] = 'one'
+  })
   expect(getByTestId('foo')).toHaveTextContent('one')
-  object.arr.push('two')
+  act(() => {
+    object.arr.push('two')
+  })
   expect(getByTestId('foo')).toHaveTextContent('one,two')
 })
 
@@ -592,20 +624,24 @@ describe.skip('pending edge-cases', () => {
     const {getByTestId} = render(<Component />)
 
     expect(getByTestId('foo')).toHaveTextContent('null')
-    object['field'] = {
-      nested: {
-        deep: 'value'
+    act(() => {
+      object['field'] = {
+        nested: {
+          deep: 'value'
+        }
       }
-    }
 
-    object['field'].nested = {
-      deep: {
-        very: 'deeper'
+      object['field'].nested = {
+        deep: {
+          very: 'deeper'
+        }
       }
-    }
+    })
 
     expect(getByTestId('foo')).toHaveTextContent('deeper')
-    object['field'].nested.deep.very = 'fathoms'
+    act(() => {
+      object['field'].nested.deep.very = 'fathoms'
+    })
     expect(getByTestId('foo')).toHaveTextContent('fathoms')
   })
 })
@@ -665,17 +701,21 @@ test('unmounting one component does not cause other components to be unsubscribe
   expect(getByTestId('numberInOther')).toHaveTextContent('5')
   expect(model.current).toEqual(5)
 
-  fireEvent.click(getByText('Change the numbers in first component'))
+  getByText('Change the numbers in first component').click()
 
   expect(getByTestId('numberInFirst')).toHaveTextContent('4')
   expect(getByTestId('numberInOther')).toHaveTextContent('4')
   expect(model.current).toEqual(4)
 
-  model.previous()
+  act(() => {
+    model.previous()
+  })
   expect(model.current).toEqual(3)
   expect(getByTestId('numberInFirst')).toHaveTextContent('3')
 
-  model.previous()
+  act(() => {
+    model.previous()
+  })
   expect(model.current).toEqual(2)
   expect(getByTestId('numberInFirst')).toHaveTextContent('2')
 })
