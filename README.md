@@ -127,8 +127,8 @@ While working with clients and seeing how complex UI's have become, the question
 
 The following inferences were made:
 
-* Part of the BDD approach is bring people together to collaboratively come up with specifications that articulate the problem/solution domain as rules and examples.
-* Part of the DDD approach is to model the problem/solution domain using services and that enforce the rules and carry out business logic.
+* Part of the BDD approach is bring people together to collaboratively come up with specifications that articulate the problem/solution domain as rules and examples
+* Part of the DDD approach is to model the problem/solution domain using aggregates and services that enforce the said rules and carry out business logic required for said scenarios
 * Part of the Clean Architecture approach is having concentric-rings layers where the inner layers contain the domain model and use-cases, and the outer layers contain the interfaces and frameworks.
 
 In the world of front-ends, the above inferences result in the following implications:
@@ -149,7 +149,9 @@ From Clean Architecture
 * Controller layer - Takes actions and translates them into something the use-case interactor can deal with  
 * Use-case Interactor layer - This is basically either an aggregate root or a service from DDD
 
-_Side note: It may make sense to have the UI layer and the Controller live in the same file, even though they are different layers, as long as the separation of concerns is applied._ 
+_Side notes:_
+* _It may make sense to have the UI layer and the Controller live in the same file, even though they are different layers, as long as the separation of concerns is applied._
+* _It may not make sense to have a controller at all in some cases and to have the UI layer connect directly to an interaction domain object_
 
 But in order to do any of the above, one has to completely decouple the presentation layer from the layers beneath. And while it's possible to do so with the right coding practices, we found there was a lot of boilerplate in binding data to the UI. If we could somehow just focus on the interaction modeling and then plug a UI on top that requires minimal boilerplate code and is highly decoupled, that would allow us to move fast and to have highly testable code. Moreover, it would not lock us in to any framework. 
 
