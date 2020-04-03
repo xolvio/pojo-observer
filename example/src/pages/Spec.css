@@ -1,0 +1,66 @@
+.flex-container {
+  display: flex;
+  border: 5px solid yellow;
+  flex-direction: row;
+  justify-content: space-between;
+  height: 95vh;
+}
+
+.right{
+  display: flex;
+  border: 5px solid gray;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 55vw;
+}
+
+.file-tree {
+  border: 5px solid red;
+  width: 45vw;
+  padding: 10px;
+}
+
+.file-tree ul {
+  list-style-type:none;
+  padding:0;
+  margin:10px;
+}
+
+.file-tree ul li {
+  list-style:none;
+}
+
+.file-tree_item {
+  margin: 5px 0;
+}
+
+.file-tree_item.selected {
+  background-color: #ccf;
+}
+
+.file-tree_item:hover {
+  cursor: pointer;
+  background-color: #aaa;
+}
+
+.file-contents {
+  border: 5px solid green;
+  height: 100vw;
+  padding: 10px;
+}
+
+.file-details {
+  border: 5px solid blue;
+  height: 25vw;
+  padding: 10px;
+}
+
+.file-details ul {
+  list-style-type:none;
+  padding:0;
+  margin:10px;
+}
+
+.file-details ul li {
+  list-style:none;
+}

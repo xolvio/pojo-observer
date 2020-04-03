@@ -2,10 +2,12 @@
   "name": "pojo-observer",
   "author": "Sam Hatoum",
   "contributors": [
-    "Lukasz Gandecki"
+    "Lukasz Gandecki",
+    "Michal Baranowski"
   ],
   "version": "1.0.2",
   "dependencies": {
+    "@babel/plugin-proposal-decorators": "^7.8.3",
     "@types/jest": "^25.1.1",
     "object-hash": "^2.0.0"
   },
@@ -15,10 +17,10 @@
     "test": "npm run test:unit",
     "prepublish": "rm -rf lib && npm run build",
     "build:watch": "npm run build:js -- --watch",
-    "type-check": "tsc --noEmit",
+    "type-check": "cd src && tsc --noEmit",
     "type-check:watch": "npm run type-check -- --watch",
     "build": "npm run build:types && npm run build:js",
-    "build:types": "tsc --declaration --emitDeclarationOnly --jsx react",
+    "build:types": "cd src && tsc --declaration --emitDeclarationOnly --jsx react",
     "build:js": "babel src --out-dir lib --extensions \".ts,.tsx\" --source-maps inline --ignore '**/*.spec.ts*,*/demo'"
   },
   "files": [
@@ -43,8 +45,14 @@
     "@typescript-eslint/parser": "^2.18.0",
     "babel-jest": "^24.9.0",
     "eslint": "^6.8.0",
-    "eslint-config-prettier": "^6.10.0",
+    "eslint-config-airbnb": "^18.1.0",
+    "eslint-config-airbnb-base": "^14.1.0",
+    "eslint-config-prettier": "^6.10.1",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-prettier": "^3.1.2",
+    "eslint-plugin-react": "^7.19.0",
+    "eslint-plugin-react-hooks": "^2.5.0",
     "husky": "^4.2.1",
     "jest": "^25.1.0",
     "lint-staged": "^10.0.7",
