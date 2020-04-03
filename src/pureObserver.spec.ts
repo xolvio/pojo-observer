@@ -46,3 +46,43 @@ test('it should callback for changes in objects added to arrays', () => {
   object.arr[0].hello = 'there'
   td.verify(obj1Callback(), {times: 2})
 })
+
+
+class File {
+  name: string
+  selected: boolean
+  constructor(name: string, selected: boolean) {
+    this.name = name
+    this.selected = selected
+  }
+}
+
+class FileTree {
+  _files?:File[]
+
+  get files () {
+    return this._files || []
+  }
+
+  set files(files: File[]) {
+    this._files = files
+  }
+
+  toggleSelected(file: File) {
+    file.selected = !file.selected
+  }
+}
+
+
+test('it should callback for changes in objects added to arrays of a given type', () => {
+
+  const fileTree = new FileTree()
+  fileTree.files = [new File('foo', true), new File('bar', false)]
+  const obj1Callback = td.func()
+
+  pureObserver(fileTree, obj1Callback)
+
+  fileTree.toggleSelected(fileTree.files[0])
+
+  td.verify(obj1Callback())
+})
