@@ -20,8 +20,15 @@ export default class FileTree {
   }
 
   toggleSelected(file: File) {
-    // FIXME the pojo-observer is not working for this case
     file.selected = !file.selected
+
+    this.files.forEach((f) => {
+      if (f !== file) {
+        f.selected = false
+      }
+    })
+
+
     if (file.selected) {
       this._eventEmitter.emit(new FileSelectedEvent(file))
     } else {

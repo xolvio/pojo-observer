@@ -1,7 +1,10 @@
 {
   "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "src/tsconfig.json"
+  },
   "extends": [
-    "airbnb",
+    "airbnb-typescript",
     "airbnb/hooks",
     "eslint:recommended",
     "plugin:@typescript-eslint/eslint-recommended",
@@ -13,7 +16,9 @@
     "prettier/prettier": "error",
     "react/jsx-filename-extension": 0,
     "import/prefer-default-export": 0,
-    "@typescript-eslint/member-delimiter-style": 0
+    "@typescript-eslint/member-delimiter-style": 0,
+    "@typescript-eslint/semi": 0,
+    "no-underscore-dangle": 0
   },
   "env": {
     "browser": true,

@@ -113,6 +113,9 @@ function attachProxyToField(
 }
 
 function attachProxyToArray(object, fieldName, callback, id): void {
+  object[fieldName].forEach((element, index) => {
+    recursivelyAttachProxy(element, index, object[fieldName], id, callback)
+  })
   object[fieldName] = new Proxy(object[fieldName], {
     get: function(target, property): object {
       return target[property]

@@ -1414,11 +1414,6 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-12.12.34.tgz#0a5d6ae5d22612f0cf5f10320e1fc5d2a745dcb8"
   integrity sha512-BneGN0J9ke24lBRn44hVHNeDlrXRYF+VRp0HbSUNnEZahXGAysHZIqnf/hER6aabdBgzM4YOV4jrR8gj4Zfi0g==
 
-"@types/object-hash@^1.3.1":
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/@types/object-hash/-/object-hash-1.3.1.tgz#b8145122b230bad5a13cba52016e78c54dae6ed5"
-  integrity sha512-xhLwbVGAXi/LJEowMjRY1anbF5sQWeuocVjaMrFYy4bOEpl79A4eIby3xlowbkXytUdbISwOZB+vQx9Y/n0p8A==
-
 "@types/parse-json@^4.0.0":
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/@types/parse-json/-/parse-json-4.0.0.tgz#2f8bb441434d163b35fb8ffdccd7138927ffb8c0"
@@ -8961,7 +8956,7 @@ run-queue@^1.0.0, run-queue@^1.0.3:
   dependencies:
     aproba "^1.1.1"
 
-rxjs@^6.5.3, rxjs@^6.5.4:
+rxjs@^6.5.3:
   version "6.5.4"
   resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-6.5.4.tgz#e0777fe0d184cec7872df147f303572d414e211c"
   integrity sha512-naMQXcgEo3csAEGvw/NydRA0fuS2nDZJiw1YUWFKU7aPPAPGZEsD4Iimit96qwCieH6y614MCLYwdkrWx7z/7Q==

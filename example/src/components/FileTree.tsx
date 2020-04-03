@@ -10,7 +10,7 @@ const FileTree: React.FC<IFileTree> = (props) => {
     <li key={file.canonicalPath}
         onClick={() => fileTree.toggleSelected(file)}
         className={`file-tree_item ${file.selected?"selected":""}`}>
-          <span role={"img"} aria-label={"File icon"}>📄</span>{file.canonicalPath} [{file.selected.toString()}]
+          <span role={"img"} aria-label={"File icon"}>📄</span>{file.canonicalPath}
     </li>
   )
 

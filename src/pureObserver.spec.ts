@@ -37,52 +37,42 @@ test('it should callback for changes in objects added to arrays', () => {
   const object = {arr: []}
   const obj1Callback = td.func()
   pureObserver(object, obj1Callback)
-
   object.arr[0] = {
     hello: 'world'
   }
   td.verify(obj1Callback())
 
   object.arr[0].hello = 'there'
+
   td.verify(obj1Callback(), {times: 2})
 })
 
-
-class File {
-  name: string
-  selected: boolean
-  constructor(name: string, selected: boolean) {
-    this.name = name
-    this.selected = selected
-  }
-}
-
-class FileTree {
-  _files?:File[]
-
-  get files () {
-    return this._files || []
-  }
-
-  set files(files: File[]) {
-    this._files = files
-  }
-
-  toggleSelected(file: File) {
-    file.selected = !file.selected
-  }
-}
-
-
-test('it should callback for changes in objects added to arrays of a given type', () => {
-
-  const fileTree = new FileTree()
-  fileTree.files = [new File('foo', true), new File('bar', false)]
+test('it should callback for changes in objects added to arrays before observer is attached', () => {
+  const object = {arr: []}
   const obj1Callback = td.func()
+  object.arr[0] = {
+    hello: 'world'
+  }
+  pureObserver(object, obj1Callback)
 
-  pureObserver(fileTree, obj1Callback)
+  object.arr[0].hello = 'there'
 
-  fileTree.toggleSelected(fileTree.files[0])
+  td.verify(obj1Callback())
+})
+
+
+test('it should callback for changes in objects added to arrays before observer is attached', () => {
+  const object = {arr: []}
+  const obj1Callback = td.func()
+  object.arr[0] = {
+    hello: 'world'
+  }
+  object.arr[1] = {
+    yo: 'dude'
+  }
+  pureObserver(object, obj1Callback)
+
+  object.arr[1].yo = 'man'
 
   td.verify(obj1Callback())
 })
