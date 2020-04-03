@@ -1,5 +1,6 @@
 import File from './File'
 import FileSelectedEvent from './FileSelectedEvent'
+import FileUnselectedEvent from './FileUnselectedEvent'
 import IEventEmitter from "./IEventEmitter"
 
 export default class FileTree {
@@ -8,8 +9,7 @@ export default class FileTree {
     this._eventEmitter = eventEmitter
   }
 
-  // fixme this doesn't work when it is not initialized like this: _files?:File[]
-  _files?:File[] = []
+  _files?:File[]
 
   get files () {
     return this._files || []
@@ -24,6 +24,8 @@ export default class FileTree {
     file.selected = !file.selected
     if (file.selected) {
       this._eventEmitter.emit(new FileSelectedEvent(file))
+    } else {
+      this._eventEmitter.emit(new FileUnselectedEvent(file))
     }
   }
 }

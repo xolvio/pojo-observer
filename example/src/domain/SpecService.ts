@@ -3,35 +3,29 @@ import IEventEmitter from "./IEventEmitter"
 import FileTree from "./FileTree"
 import FileContents from "./FileContents"
 import FileDetails from "./FileDetails"
-import IDomainEvent from "./IDomainEvent"
+import FileSelectedEvent from "./FileSelectedEvent"
+import FileUnselectedEvent from "./FileUnselectedEvent"
 
 export default class SpecService {
-  _fileRepository: IFileRepository
-  _eventEmitter: IEventEmitter
-  _fileTree: FileTree
-  _fileContents: FileContents
-  _fileDetails: FileDetails
 
   constructor(
-    fileRepository: IFileRepository,
-    eventEmitter: IEventEmitter,
-    fileTree: FileTree,
-    fileContents: FileContents,
-    fileDetails: FileDetails) {
-    this._fileRepository = fileRepository
-    this._eventEmitter = eventEmitter
-    this._fileTree = fileTree
-    this._fileContents = fileContents
-    this._fileDetails = fileDetails
-  }
+    private fileRepository: IFileRepository,
+    private eventEmitter: IEventEmitter,
+    private fileTree: FileTree,
+    private fileContents: FileContents,
+    private fileDetails: FileDetails) {}
 
   init() {
-    this._fileTree.files = this._fileRepository.getFiles()
-    this._eventEmitter.on('FileSelectedEvent', (event: IDomainEvent) => {
-      // @ts-ignore
-      this._fileContents.setFile(event._file)
-      // @ts-ignore
-      this._fileDetails.setFile(event._file)
+    // we can add onNewFiles
+    this.fileTree.files = this.fileRepository.getFiles()
+    this.eventEmitter.on(FileSelectedEvent, (event: FileSelectedEvent) => {
+      console.log('selected')
+      this.fileContents.setFile(event._file)
+      this.fileDetails.setFile(event._file)
+    })
+
+    this.eventEmitter.on(FileUnselectedEvent, (event: FileSelectedEvent) => {
+      console.log('unselected')
     })
   }
 }

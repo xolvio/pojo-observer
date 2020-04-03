@@ -1,7 +1,7 @@
 import File from "./File"
 import IDomainEvent from "./IDomainEvent"
 
-export default class FileSelectedEvent  implements IDomainEvent {
+export default class FileUnselectedEvent  implements IDomainEvent {
   _file: File
   _dateTimeOccurred: Date
   constructor(file: File) {
@@ -9,5 +9,3 @@ export default class FileSelectedEvent  implements IDomainEvent {
     this._file = file
   }
 }
-
-

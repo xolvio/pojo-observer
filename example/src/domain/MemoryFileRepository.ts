@@ -18,6 +18,13 @@ export default class MemoryFileRepository implements IFileRepository {
 
   }
   getFiles() {
+
+    this.files[1].selected = true
+    setTimeout(() => {
+      this.files[2].selected = true
+      console.log(this.files[2])
+    }, 3000)
+
     return this.files
   }
 }

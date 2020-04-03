@@ -1,3 +1,3 @@
 export default interface IDomainEvent {
-  _dateTimeOccurred: Date;
+  _dateTimeOccurred?: Date;
 }

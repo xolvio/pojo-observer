@@ -2,17 +2,17 @@ import IEventEmitter from "./IEventEmitter"
 import IDomainEvent from "./IDomainEvent"
 
 export default class SimpleEventEmitter implements IEventEmitter {
-  _callbacks = {}
-  on(eventName: string, callback: Function): void {
-    // @ts-ignore
-    this._callbacks[eventName] = this._callbacks[eventName] || []
-    // @ts-ignore
-    this._callbacks[eventName].push(callback)
+  _callbacks: {[key: string]: Function[] } = {}
+  on(clazz: any, callback: Function): void {
+    const eventHash = clazz.name
+    console.log('on', eventHash)
+    this._callbacks[eventHash] = this._callbacks[eventHash] || []
+    this._callbacks[eventHash].push(callback)
   }
 
   emit(event: IDomainEvent): void {
     const eventHash = event.constructor.name
-    // @ts-ignore
+    console.log('emit', eventHash)
     this._callbacks[eventHash] && this._callbacks[eventHash].forEach(cb => cb(event))
   }
 }
