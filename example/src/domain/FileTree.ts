@@ -28,7 +28,6 @@ export default class FileTree {
       }
     })
 
-
     if (file.selected) {
       this._eventEmitter.emit(new FileSelectedEvent(file))
     } else {

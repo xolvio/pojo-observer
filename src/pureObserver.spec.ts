@@ -76,3 +76,52 @@ test('it should callback for changes in objects added to arrays before observer 
 
   td.verify(obj1Callback())
 })
+
+test('it should observe provided arrays that overwrite internal arrays',  () => {
+  const arr = []
+  const obj1 = {arr: []}
+  const obj1Callback = td.func()
+  obj1.arr = arr
+  pureObserver(obj1, obj1Callback)
+
+  arr.push('boo')
+
+  td.verify(obj1Callback())
+})
+
+test('it should observe provided objects that overwrite internal objects',  () => {
+  const innerObj = {}
+  const obj1 = {innerObj: {} = {}}
+  const obj1Callback = td.func()
+  obj1.innerObj = innerObj
+  pureObserver(obj1, obj1Callback)
+
+  innerObj['foo'] = 'bar'
+
+  td.verify(obj1Callback())
+})
+
+test('it should observe provided arrays that create new internal arrays',  () => {
+  const arr = []
+  const obj1 = {}
+  const obj1Callback = td.func()
+  obj1['arr'] = arr
+  pureObserver(obj1, obj1Callback)
+
+  arr.push('boo')
+
+  td.verify(obj1Callback())
+})
+
+test('it should observe provided objects that create new internal objects',  () => {
+  const innerObj = {}
+  const obj1 = {}
+  const obj1Callback = td.func()
+  obj1['innerObj'] = innerObj
+  pureObserver(obj1, obj1Callback)
+
+  innerObj['foo'] = 'bar'
+
+  td.verify(obj1Callback())
+})
+

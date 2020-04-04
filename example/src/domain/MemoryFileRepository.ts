@@ -10,12 +10,12 @@ const lorem4 = "Boudin chicken tongue short loin rump flank fatback turducken sh
 export default class MemoryFileRepository implements IFileRepository {
   files: File[] = []
   constructor() {
-    this.files.push(new File('File 0', '', lorem0))
-    this.files.push(new File('File 1', '/src', lorem1))
-    this.files.push(new File('File 2', '/test', lorem2))
-    this.files.push(new File('File 3', '/lib', lorem3))
-    this.files.push(new File('File 4', '/dist', lorem4))
-
+    this.files.push(new File('File 0', '/', lorem0))
+    // simulate a polling update
+    setTimeout(() => {this.files.push(new File('File 1', '/src/', lorem1))}, 1000)
+    setTimeout(() => {this.files.push(new File('File 2', '/test/', lorem2))}, 2000)
+    setTimeout(() => {this.files.push(new File('File 3', '/lib/', lorem3))}, 3000)
+    setTimeout(() => {this.files.push(new File('File 4', '/dist/', lorem4))}, 4000)
   }
   getFiles() {
     return this.files

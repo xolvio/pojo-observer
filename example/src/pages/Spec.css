@@ -31,16 +31,18 @@
 }
 
 .file-tree_item {
-  margin: 5px 0;
+  padding: 5px 0;
+  border: 1px solid #fff
 }
 
 .file-tree_item.selected {
   background-color: #ccf;
+  border: 1px solid #ccf
 }
 
 .file-tree_item:hover {
   cursor: pointer;
-  background-color: #aaa;
+  border: 1px solid #889
 }
 
 .file-contents {

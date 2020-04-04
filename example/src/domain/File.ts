@@ -10,6 +10,6 @@ export default class File {
     this.selected = false
   }
   get canonicalPath () {
-    return this.path + '/' + this.name
+    return this.path + this.name
   }
 }
