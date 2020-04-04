@@ -18,13 +18,13 @@ export default class SpecService {
   init() {
     // we can add onNewFiles
     this.fileTree.files = this.fileRepository.getFiles()
-    this.eventEmitter.on(FileSelectedEvent, (event: FileSelectedEvent) => {
+    this.eventEmitter.on(FileSelectedEvent, (event) => {
       console.log('selected')
       this.fileContents.setFile(event._file)
       this.fileDetails.setFile(event._file)
     })
 
-    this.eventEmitter.on(FileUnselectedEvent, (event: FileSelectedEvent) => {
+    this.eventEmitter.on(FileUnselectedEvent, (event) => {
       console.log('unselected')
     })
   }

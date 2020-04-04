@@ -3,16 +3,14 @@ import IDomainEvent from "./IDomainEvent"
 
 export default class SimpleEventEmitter implements IEventEmitter {
   _callbacks: {[key: string]: Function[] } = {}
-  on(clazz: any, callback: Function): void {
-    const eventHash = clazz.name
-    console.log('on', eventHash)
+  on<T>(event: {new(...args: any[]): T}, callback: (e: T) => void): void {
+    const eventHash = event.name
     this._callbacks[eventHash] = this._callbacks[eventHash] || []
     this._callbacks[eventHash].push(callback)
   }
 
   emit(event: IDomainEvent): void {
     const eventHash = event.constructor.name
-    console.log('emit', eventHash)
     this._callbacks[eventHash] && this._callbacks[eventHash].forEach(cb => cb(event))
   }
 }
