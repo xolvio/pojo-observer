@@ -2,21 +2,45 @@ import File from './File'
 import FileSelectedEvent from './FileSelectedEvent'
 import FileUnselectedEvent from './FileUnselectedEvent'
 import IEventEmitter from "./IEventEmitter"
+import IFileRepository from "./IFileRepository"
 
 export default class FileTree {
-  _eventEmitter: IEventEmitter
-  constructor(eventEmitter: IEventEmitter) {
-    this._eventEmitter = eventEmitter
+  constructor(
+    private _eventEmitter: IEventEmitter,
+    private _fileRepository: IFileRepository
+  ) {}
+
+  _files:File[] = []
+  _loading: boolean = false
+  _locked: boolean = false
+
+  loadFiles() {
+    this._loading = true
+    this._fileRepository.getFiles().then((files)=> {
+      this._loading = false
+      files.forEach((file) => {
+        this._files.push(file)
+      })
+    })
   }
 
-  _files?:File[]
+  writeFiles() {
+    this._locked = true
+    this._fileRepository.writeFiles().then(() => {
+      this._locked = false;
+    })
+  }
 
   get files () {
-    return this._files || []
+    return this._files
   }
 
-  set files(files: File[]) {
-    this._files = files
+  get loading() {
+    return this._loading
+  }
+
+  get locked() {
+    return this._locked
   }
 
   toggleSelected(file: File) {

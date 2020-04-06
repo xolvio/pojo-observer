@@ -9,7 +9,7 @@ const memoryFileRepository = new MemoryFileRepository()
 
 const simpleEventEmitter = new SimpleEventEmitter()
 
-const fileTree = new FileTree(simpleEventEmitter)
+const fileTree = new FileTree(simpleEventEmitter, memoryFileRepository)
 export interface IFileTree { fileTree: FileTree }
 
 const fileContents = new FileContents()
@@ -18,7 +18,7 @@ export interface IFileContents { fileContents: FileContents }
 const fileDetails = new FileDetails()
 export interface IFileDetails { fileDetails: FileDetails }
 
-const specService = new SpecService(memoryFileRepository, simpleEventEmitter, fileTree, fileContents, fileDetails)
+const specService = new SpecService(simpleEventEmitter, fileTree, fileContents, fileDetails)
 
 export default {
   fileTree,

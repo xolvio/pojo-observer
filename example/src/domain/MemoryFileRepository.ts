@@ -8,16 +8,28 @@ const lorem3 = "Cow pork chop brisket pastrami tri-tip ham kielbasa. T-bone ham 
 const lorem4 = "Boudin chicken tongue short loin rump flank fatback turducken short ribs picanha venison chuck porchetta. Boudin shankle capicola ham leberkas beef biltong sirloin corned beef frankfurter porchetta jerky. Doner biltong spare ribs, jowl short loin ground round tongue strip steak leberkas kielbasa bacon shank cupim swine. Corned beef chicken swine, tongue venison ground round pork loin turkey salami ball tip pork chop pancetta. Beef doner boudin rump pork belly turducken capicola venison, buffalo short loin shank prosciutto andouille ball tip."
 
 export default class MemoryFileRepository implements IFileRepository {
-  files: File[] = []
-  constructor() {
-    this.files.push(new File('File 0', '/', lorem0))
-    // simulate a polling update
-    setTimeout(() => {this.files.push(new File('File 1', '/src/', lorem1))}, 1000)
-    setTimeout(() => {this.files.push(new File('File 2', '/test/', lorem2))}, 2000)
-    setTimeout(() => {this.files.push(new File('File 3', '/lib/', lorem3))}, 3000)
-    setTimeout(() => {this.files.push(new File('File 4', '/dist/', lorem4))}, 4000)
+
+  _counter: number = 0
+
+  getNextFileNumber () {
+    return this._counter +=1
   }
-  getFiles() {
-    return this.files
+
+  async getFiles(): Promise<File []> {
+    return await new Promise(resolve => setTimeout(() => {
+      const files = []
+      files.push(new File(`File ${this.getNextFileNumber()}`, '/', lorem0))
+      files.push(new File(`File ${this.getNextFileNumber()}`, '/src/', lorem1))
+      files.push(new File(`File ${this.getNextFileNumber()}`, '/test/', lorem2))
+      files.push(new File(`File ${this.getNextFileNumber()}`, '/lib/', lorem3))
+      files.push(new File(`File ${this.getNextFileNumber()}`, '/dist/', lorem4))
+      resolve(files)
+    }, 1000));
+  }
+
+  async writeFiles(): Promise<void> {
+    return await new Promise(resolve => setTimeout(() => {
+      resolve()
+    }, 1000))
   }
 }

@@ -1,5 +1,6 @@
 import File from './File'
 
 export default interface IFileRepository {
-  getFiles(): File[]
+  getFiles(): Promise<File[]>
+  writeFiles(): Promise<void>
 }
