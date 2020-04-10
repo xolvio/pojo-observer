@@ -2,6 +2,7 @@ import File from './File'
 
 export default class FileDetails {
   file?: File
+
   setFile(file: File) {
     this.file = file
   }

@@ -8,7 +8,7 @@ import root from '../SpecRoot'
 function Spec() {
   return (
     <div className={"flex-container"}>
-      <FileTree fileTree={root.fileTree}/>
+      <FileTree fileTreeSteps={root.fileTreeSteps}/>
       <div className={"right"}>
         <FileContents fileContents={root.fileContents}/>
         <FileDetails fileDetails={root.fileDetails}/>
