@@ -15,16 +15,11 @@ const workspaceService = new WorkspaceService(eventEmitter, fileTreeSteps, fileD
 workspaceService.init()
 
 Given(/^the following files have been loaded by the File Tree$/, function (filesTable) {
-  const files = []
-  filesTable.hashes().forEach((file) => {
-    files.push(new File(file.filename, file.content, new Date(file.createdAt)))
-  })
-  fileTreeSteps.load(files)
+  fileTreeSteps.load(filesTable.hashes().map((file)=> new File(file.filename, file.content, new Date(file.createdAt))))
 })
 
 When(/^I select "([^"]*)" in the File Tree$/, function (filename) {
-  const file = fileTreeSteps.files.find((file)=> file.filename === filename)
-  fileTreeSteps.select(file)
+  fileTreeSteps.select(fileTreeSteps.files.find((file)=> file.filename === filename))
 })
 
 Then(/^the File Content should contain "([^"]*)"$/, function (content) {
