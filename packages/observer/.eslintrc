@@ -18,7 +18,9 @@
     "import/prefer-default-export": 0,
     "@typescript-eslint/member-delimiter-style": 0,
     "@typescript-eslint/semi": 0,
-    "no-underscore-dangle": 0
+    "@typescript-eslint/space-before-function-paren": 0,
+    "no-underscore-dangle": 0,
+    "no-cond-assign": ["error", "except-parens"]
   },
   "env": {
     "browser": true,

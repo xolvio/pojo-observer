@@ -16,11 +16,15 @@ test('it reacts to a change', () => {
 test('that it can work with multiple objects, no react', () => {
   const obj1 = {
     foo: 'here',
-    mutateMe: () => (obj1.foo = 'there'),
+    mutateMe: () => {
+      obj1.foo = 'there'
+    },
   }
   const obj2 = {
     bar: 'pete',
-    mutateMe: () => (obj2.bar = 'paul'),
+    mutateMe: () => {
+      obj2.bar = 'paul'
+    },
   }
   const obj1Callback = td.func()
   pureObserver(obj1, obj1Callback)
@@ -40,7 +44,7 @@ test('it should callback for changes in objects added to arrays', () => {
   const object = {arr: []}
   const obj1Callback = td.func()
   pureObserver(object, obj1Callback)
-  //FIXME - get rid of the initial callback
+  // FIXME - get rid of the initial callback
 
   td.verify(obj1Callback(), {times: 1})
 
@@ -61,12 +65,12 @@ test('it should callback for changes in objects added to arrays before observer 
     hello: 'world',
   }
   pureObserver(object, obj1Callback)
-  //FIXME - callback should not happen right after observing
+  // FIXME - callback should not happen right after observing
 
   td.verify(obj1Callback(), {times: 1})
 
   object.arr[0].hello = 'there'
-  //FIXME - callback should happen only once
+  // FIXME - callback should happen only once
 
   td.verify(obj1Callback(), {times: 3})
 })
@@ -142,13 +146,14 @@ test('undefined array', () => {
 
 test('it should observe provided objects that overwrite internal objects', () => {
   const innerObj = {foo: 'something'}
+  // eslint-disable-next-line no-empty-pattern
   const obj1 = {innerObj: {} = {}}
   const obj1Callback = td.func()
   obj1.innerObj = innerObj
   pureObserver(obj1, obj1Callback)
   td.verify(obj1Callback(), {times: 0})
 
-  innerObj['foo'] = 'bar'
+  innerObj.foo = 'bar'
 
   td.verify(obj1Callback())
 })
@@ -157,11 +162,12 @@ test('it should observe provided objects that create new internal objects', () =
   const innerObj = {foo: 'test'}
   const obj1 = {}
   const obj1Callback = td.func()
-  obj1['innerObj'] = innerObj
+  // @ts-ignore
+  obj1.innerObj = innerObj
   pureObserver(obj1, obj1Callback)
   td.verify(obj1Callback(), {times: 0})
 
-  innerObj['foo'] = 'bar'
+  innerObj.foo = 'bar'
 
   td.verify(obj1Callback(), {times: 1})
 })
@@ -259,7 +265,6 @@ test('multi-level depth fields are set to an object whose value changes', () => 
     nested: {},
   }
   td.verify(objectCallback(), {times: 1})
-  console.log('GOZDECKI object.field', object.field)
 
   object.field.nested.deep = {very: 'deeper'}
 
