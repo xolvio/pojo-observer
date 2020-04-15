@@ -1,0 +1,25 @@
+{
+  "name": "pojo-observer-monorepo",
+  "version": "1.0.0",
+  "description": "## What? A minimalist object observer that works with React hooks.",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xolvio/pojo-observer.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/xolvio/pojo-observer/issues"
+  },
+  "homepage": "https://github.com/xolvio/pojo-observer#readme",
+  "devDependencies": {
+    "prettier": "^2.0.4"
+  }
+}

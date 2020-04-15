@@ -1,7 +1,8 @@
+/* eslint-disable max-classes-per-file */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import * as React from 'react'
-import useObserver from './useObserver'
 import {render, act} from '@testing-library/react'
+import useObserver from './useObserver'
 import '@testing-library/jest-dom/extend-expect'
 import {addHash} from './addHash'
 
@@ -71,7 +72,7 @@ test('add hash internally', () => {
 test('that it can work with objects', () => {
   const obj = {
     foo: 'here',
-    mutateMe: (): string => (obj.foo = 'there')
+    mutateMe: (): string => (obj.foo = 'there'),
   }
 
   function ComponentUsingModel({model}) {
@@ -96,12 +97,12 @@ test('that it can work with objects', () => {
 test('that it can work with multiple objects', () => {
   const obj1 = {
     foo: 'here',
-    mutateMe: (): string => (obj1.foo = 'there')
+    mutateMe: (): string => (obj1.foo = 'there'),
   }
 
   const obj2 = {
     bar: 'pete',
-    mutateMe: (): string => (obj2.bar = 'paul')
+    mutateMe: (): string => (obj2.bar = 'paul'),
   }
 
   function ComponentUsingModel({model1, model2}) {
@@ -136,12 +137,12 @@ test('that it can work with multiple objects', () => {
 test('that it can work with multiple objects', () => {
   const obj1 = {
     foo: 'here',
-    mutateMe: (): string => (obj1.foo = 'there')
+    mutateMe: (): string => (obj1.foo = 'there'),
   }
 
   const obj2 = {
     bar: 'pete',
-    mutateMe: (): string => (obj2.bar = 'paul')
+    mutateMe: (): string => (obj2.bar = 'paul'),
   }
 
   function ComponentUsingModel1({model}) {
@@ -418,7 +419,7 @@ test('nested classes', () => {
 test('Changing a state of one model should not re-render a react component using a different model', () => {
   const firstModel = {
     foo: 'here',
-    mutateMe: (): string => (firstModel.foo = 'there')
+    mutateMe: (): string => (firstModel.foo = 'there'),
   }
 
   let firstComponentRerunTimes = 0
@@ -436,12 +437,12 @@ test('Changing a state of one model should not re-render a react component using
 
   const otherModel = {
     someValue: 'someString',
-    changeMe: function(): void {
+    changeMe: function (): void {
       this.someValue = 'otherString'
     },
-    getRerunTimes: function(): string {
+    getRerunTimes: function (): string {
       return this.someValue
-    }
+    },
   }
 
   let differentComponentRerunTimes = 0
@@ -516,8 +517,8 @@ test('it should re-render when null fields are set to an object whose value chan
   act(() => {
     object.field = {
       nested: {
-        deep: 'value'
-      }
+        deep: 'value',
+      },
     }
   })
   expect(getByTestId('foo')).toHaveTextContent('value')
@@ -527,11 +528,13 @@ test('it should re-render when null fields are set to an object whose value chan
   expect(getByTestId('foo')).toHaveTextContent('fathoms')
 })
 
-test('it should re-render when multi-level depth fields are set to an object whose value changes', () => {
+test('it should re-render when multi-level depth fields are set to an object whose value changes - no proxy', () => {
   const object = {field: null}
 
   function Component() {
     useObserver(object)
+    console.log("GOZDECKI object.field.nested.deep.very", object?.field?.nested.deep.very)
+
     return (
       <div data-testid={'foo'}>
         {object.field === null ? 'null' : object.field.nested.deep.very}
@@ -545,18 +548,19 @@ test('it should re-render when multi-level depth fields are set to an object who
   act(() => {
     object.field = {
       nested: {
-        deep: 'value'
-      }
+        deep: 'value',
+      },
     }
   })
   act(() => {
     object.field.nested = {
       deep: {
-        very: 'deeper'
-      }
+        very: 'deeper',
+      },
     }
   })
 
+  console.log("GOZDECKI object.field.nested.deep", object.field.nested.deep)
   expect(getByTestId('foo')).toHaveTextContent('deeper')
   act(() => {
     object.field.nested.deep.very = 'fathoms'
@@ -594,7 +598,7 @@ describe.skip('pending edge-cases', () => {
     }
 
     object.arr[0] = {
-      hello: 'world'
+      hello: 'world',
     }
 
     const {getByTestId} = render(<Component />)
@@ -627,14 +631,14 @@ describe.skip('pending edge-cases', () => {
     act(() => {
       object['field'] = {
         nested: {
-          deep: 'value'
-        }
+          deep: 'value',
+        },
       }
 
       object['field'].nested = {
         deep: {
-          very: 'deeper'
-        }
+          very: 'deeper',
+        },
       }
     })
 

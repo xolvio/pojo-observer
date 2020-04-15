@@ -12,12 +12,12 @@ class EventEmitter {
 
   remove(eventId, subscriptionId): void {
     this.callbacks[eventId] = this.callbacks[eventId].filter(
-      c => c.subscriptionId !== subscriptionId
+      (c) => c.subscriptionId !== subscriptionId
     )
   }
 
   emit(eventId): void {
-    this.callbacks[eventId] && this.callbacks[eventId].forEach(cb => cb())
+    this.callbacks[eventId] && this.callbacks[eventId].forEach((cb) => cb())
   }
 }
 
@@ -78,7 +78,7 @@ function isWriteableArray(object, fieldName): boolean {
 function attachProxyToProperties(model: Model, callback: Function, id?): void {
   if (!model.__proxyAttached) {
     model.__proxyAttached = true
-    getFieldNames(model).forEach(field => {
+    getFieldNames(model).forEach((field) => {
       // eslint-disable-next-line @typescript-eslint/no-use-before-define
       recursivelyAttachProxy(
         model[field],
@@ -98,29 +98,132 @@ function attachProxyToField(
   callback,
   id
 ): void {
-  Object.defineProperty(object, fieldName, {
-    configurable: true,
-    enumerable: true,
-    get: () => originalField,
-    set: value => {
-      if (typeof value === 'object') {
-        attachProxyToProperties(value, callback, id)
+  if (fieldName !== '__proxyAttached') {
+    try {
+      console.log("GOZDECKI object", object)
+      console.log("GOZDECKI fieldName", fieldName)
+
+      let newProxy = new Proxy(object[fieldName], {
+        get: function (target, property): object {
+          if (target[property] === 'old') {
+            console.log("GOZDECKI ")
+          }
+          if (target[property] === 'value') {
+            console.log("GOZDECKI ")
+          }
+          return target[property]
+        },
+        set: function (target, property, value): boolean {
+          console.log("GOZDECKI property", property)
+          if (property !== '__proto__' && property !== 'length') {
+            if (typeof value === 'object') {
+              attachProxyToProperties(value, callback, id)
+            }
+            target[property] = value
+            callback()
+          }
+          return true
+        },
+      })
+
+
+      Object.defineProperty(object, fieldName, {
+        configurable: true,
+        enumerable: true,
+        get: () => {
+          return newProxy
+        },
+        set: (value) => {
+          // console.log("GOZDECKI value", value)
+          if (typeof value === 'object' && !Array.isArray(value)) {
+            attachProxyToProperties(value, callback, id)
+          }
+          if (Array.isArray(value)) {
+          }
+          newProxy = new Proxy(value, {
+            get: function (target, property): object {
+              return target[property]
+            },
+            set: function (target, property, value): boolean {
+              if (property !== '__proto__' && property !== 'length') {
+                if (typeof value === 'object') {
+                  attachProxyToProperties(value, callback, id)
+                }
+                target[property] = value
+                callback()
+              }
+              return true
+            },
+          })
+          // object[fieldName] = value
+
+          callback()
+        },
+      })
+
+      // if (fieldName === "field") {
+
+      // }
+      // console.log("GOZDECKI object[fieldName]", object[fieldName])
+      // object[fieldName].abc = ""
+    } catch (e) {
+      // This if doesn't seem to make any difference
+      if (fieldName !== 'length') {
+        Object.defineProperty(object, fieldName, {
+          configurable: true,
+          enumerable: true,
+          get: () => originalField,
+          set: (value) => {
+            // console.log("GOZDECKI value", value)
+            if (typeof value === 'object' && !Array.isArray(value)) {
+              object[fieldName]
+              attachProxyToProperties(value, callback, id)
+            }
+            if (Array.isArray(value)) {
+            }
+            originalField = value
+            callback()
+          },
+        })
       }
-      originalField = value
-      callback()
     }
-  })
+  }
 }
 
 function attachProxyToArray(object, fieldName, callback, id): void {
   object[fieldName].forEach((element, index) => {
     recursivelyAttachProxy(element, index, object[fieldName], id, callback)
   })
+
+  object[`____${fieldName}`] = object[fieldName]
+  Object.defineProperty(object, fieldName, {
+    configurable: true,
+    enumerable: true,
+    get: () => object[`____${fieldName}`],
+    set: (value) => {
+      // if (property !== '__proto__' && property !== 'length') {
+
+      // if (typeof value === 'object') {
+      //   attachProxyToProperties(value, callback, id)
+      // }
+      // }
+      object[`____${fieldName}`] = value
+      callback()
+    },
+  })
+
+  //FIXME this is causing the extra callback in pureObserver.spec tests
+  console.log('GOZDECKI object, fieldName', object, fieldName)
   object[fieldName] = new Proxy(object[fieldName], {
-    get: function(target, property): object {
+    get(target, property): object {
+      // console.log('GOZDECKI target', target)
+      // console.log('GOZDECKI target[property]', target[property])
       return target[property]
     },
-    set: function(target, property, value): boolean {
+    set(target, property, value): boolean {
+      // console.log('GOZDECKI target', target)
+      // console.log('GOZDECKI property', property)
+      // console.log('GOZDECKI value', value)
       if (property !== '__proto__' && property !== 'length') {
         if (typeof value === 'object') {
           attachProxyToProperties(value, callback, id)
@@ -129,7 +232,7 @@ function attachProxyToArray(object, fieldName, callback, id): void {
         callback()
       }
       return true
-    }
+    },
   })
 }
 
@@ -146,7 +249,7 @@ function recursivelyAttachProxy(
     return attachProxyToArray(object, fieldName, callback, id)
   if (isWriteableObjectField(object, fieldName)) {
     attachProxyToField(object, fieldName, originalField, callback, id)
-    getFieldNames(object[fieldName]).forEach(nestedFieldName =>
+    getFieldNames(object[fieldName]).forEach((nestedFieldName) =>
       recursivelyAttachProxy(
         object[fieldName][nestedFieldName],
         nestedFieldName,
@@ -163,7 +266,7 @@ function addId(model: Model): void {
   if (!model.__observableId)
     Object.defineProperty(model, '__observableId', {
       value: id(),
-      writable: false
+      writable: false,
     })
 }
 
