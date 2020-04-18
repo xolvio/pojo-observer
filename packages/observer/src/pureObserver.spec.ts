@@ -394,3 +394,31 @@ test('Setting null to an already null value, then setting a real value should tr
 
   td.verify(objectCallback(), {times: 1})
 })
+
+test('Setting null to an assigned property should trigger a callback', () => {
+  const obj = {
+    nullValue: 'anything',
+  }
+  const objectCallback = td.func()
+  pureObserver(obj, objectCallback)
+
+  obj.nullValue = null
+
+  td.verify(objectCallback(), {times: 1})
+})
+
+test('Setting null to an assigned property, then setting a real value should trigger a callback', () => {
+  const obj = {
+    nullValue: 'anything',
+  }
+  const objectCallback = td.func()
+  pureObserver(obj, objectCallback)
+
+  obj.nullValue = null
+
+  td.verify(objectCallback(), {times: 1})
+
+  obj.nullValue = 'something'
+
+  td.verify(objectCallback(), {times: 2})
+})

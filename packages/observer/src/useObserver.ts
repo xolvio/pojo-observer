@@ -71,7 +71,7 @@ function isWriteableArray(object, fieldName): boolean {
 }
 
 function attachProxyToProperties(model: Model, callback: Function, id?): void {
-  if (!model.__proxyAttached) {
+  if (model && !model.__proxyAttached) {
     // eslint-disable-next-line no-param-reassign
     model.__proxyAttached = true
     getFieldNames(model).forEach((field) => {

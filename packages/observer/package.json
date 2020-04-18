@@ -5,7 +5,7 @@
     "Lukasz Gandecki",
     "Michal Baranowski"
   ],
-  "version": "1.0.4-alpha",
+  "version": "1.0.5-alpha",
   "dependencies": {
     "object-hash": "^2.0.0"
   },
