@@ -150,7 +150,7 @@ function attachProxyToField(
           enumerable: true,
           get: () => originalField,
           set: (value) => {
-            // console.log("GOZDECKI value", value)
+            if (originalField === value) return
             if (typeof value === 'object' && !Array.isArray(value)) {
               attachProxyToProperties(value, callback, id)
             }

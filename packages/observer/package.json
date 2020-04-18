@@ -5,11 +5,8 @@
     "Lukasz Gandecki",
     "Michal Baranowski"
   ],
-  "version": "1.0.3-alpha",
+  "version": "1.0.4-alpha",
   "dependencies": {
-    "@babel/plugin-proposal-decorators": "^7.8.3",
-    "@types/jest": "^25.1.1",
-    "eslint-config-airbnb-typescript": "^7.2.0",
     "object-hash": "^2.0.0"
   },
   "scripts": {
@@ -42,12 +39,14 @@
     "@babel/preset-typescript": "~7.8.3",
     "@testing-library/jest-dom": "^5.1.0",
     "@testing-library/react": "^9.4.0",
+    "@types/jest": "^25.1.1",
     "@typescript-eslint/eslint-plugin": "^2.18.0",
     "@typescript-eslint/parser": "^2.18.0",
     "babel-jest": "^24.9.0",
     "eslint": "^6.8.0",
     "eslint-config-airbnb": "^18.1.0",
     "eslint-config-airbnb-base": "^14.1.0",
+    "eslint-config-airbnb-typescript": "^7.2.0",
     "eslint-config-prettier": "^6.10.1",
     "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-jsx-a11y": "^6.2.3",

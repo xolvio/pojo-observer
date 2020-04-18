@@ -368,3 +368,29 @@ test('multi-level depth fields are set to an object whose value changes - no pro
 
   expect(object.field.nested.deep).toEqual('value')
 })
+
+test('Setting null to an already null value should not trigger a callback', () => {
+  const obj = {
+    nullValue: null,
+  }
+  const objectCallback = td.func()
+  pureObserver(obj, objectCallback)
+
+  obj.nullValue = null
+
+  td.verify(objectCallback(), {times: 0})
+})
+
+test('Setting null to an already null value, then setting a real value should trigger a callback', () => {
+  const obj = {
+    nullValue: null,
+  }
+  const objectCallback = td.func()
+  pureObserver(obj, objectCallback)
+
+  obj.nullValue = null
+
+  obj.nullValue = 'something'
+
+  td.verify(objectCallback(), {times: 1})
+})
