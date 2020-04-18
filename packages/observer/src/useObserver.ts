@@ -71,7 +71,9 @@ function isWriteableArray(object, fieldName): boolean {
 }
 
 function attachProxyToProperties(model: Model, callback: Function, id?): void {
+  // *** SAM CHANGE 1 - replaced this: if (!model.__proxyAttached) {
   if (model && !model.__proxyAttached) {
+
     // eslint-disable-next-line no-param-reassign
     model.__proxyAttached = true
     getFieldNames(model).forEach((field) => {
@@ -120,6 +122,7 @@ function attachProxyToField(
           return newProxy
         },
         set: (value) => {
+          if (!value) return callback() // *** SAM CHANGE 3
           if (typeof value === 'object' && !Array.isArray(value)) {
             attachProxyToProperties(value, callback, id)
           }
@@ -150,7 +153,7 @@ function attachProxyToField(
           enumerable: true,
           get: () => originalField,
           set: (value) => {
-            if (originalField === value) return
+            if (originalField === value) return // *** SAM CHANGE 2
             if (typeof value === 'object' && !Array.isArray(value)) {
               attachProxyToProperties(value, callback, id)
             }
