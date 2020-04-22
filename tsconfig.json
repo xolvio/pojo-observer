@@ -4,10 +4,10 @@
     "target": "es6",
     "sourceMap": true,
     "outDir": "../lib/",
-    "experimentalDecorators": true,
+    "esModuleInterop": true,
     "jsx": "react"
   },
   "exclude": [
-    "../node_modules"
+    "./node_modules"
   ]
 }

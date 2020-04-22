@@ -22,7 +22,8 @@
     "type-check:watch": "npm run type-check -- --watch",
     "build": "npm run build:types && npm run build:js",
     "build:types": "cd src && tsc --declaration --emitDeclarationOnly --jsx react",
-    "build:js": "babel src --out-dir lib --extensions \".ts,.tsx\" --source-maps inline --ignore '**/*.spec.ts*,*/example'"
+    "build:js": "babel src --out-dir lib --extensions \".ts,.tsx\" --source-maps inline --ignore '**/*.spec.ts*,*/example'",
+    "start:example": "parcel ./example/public/index.html"
   },
   "repository": {
     "type": "git",
@@ -47,13 +48,14 @@
     "@babel/plugin-syntax-decorators": "^7.8.3",
     "@babel/preset-env": "^7.2.3",
     "@babel/preset-react": "^7.0.0",
-    "@babel/preset-typescript": "~7.8.3",
+    "@babel/preset-typescript": "^7.9.0",
     "@testing-library/jest-dom": "^5.1.0",
     "@testing-library/react": "^9.4.0",
     "@testing-library/user-event": "^7.1.2",
     "@types/jest": "^25.1.1",
-    "@typescript-eslint/eslint-plugin": "^2.18.0",
-    "@typescript-eslint/parser": "^2.18.0",
+    "@types/parcel-env": "^0.0.0",
+    "@typescript-eslint/eslint-plugin": "^2.29.0",
+    "@typescript-eslint/parser": "^2.29.0",
     "babel-jest": "^24.9.0",
     "cucumber": "^5.1.0",
     "eslint": "^6.8.0",

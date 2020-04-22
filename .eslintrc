@@ -1,7 +1,7 @@
 {
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "project": "src/tsconfig.json"
+    "project": "./tsconfig.json"
   },
   "extends": [
     "airbnb-typescript",
@@ -13,6 +13,7 @@
   ],
   "plugins": ["@typescript-eslint", "prettier"],
   "rules": {
+    "import/no-extraneous-dependencies": ["error", {"devDependencies": ["**/*.spec.tsx", "**/*.spec.ts","example/**/*.tsx", "example/**/*.ts"]}],
     "prettier/prettier": "error",
     "react/jsx-filename-extension": 0,
     "import/prefer-default-export": 0,
