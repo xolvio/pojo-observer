@@ -461,7 +461,7 @@ test('obj with a prop that is an object, set prop to null, then set prop to an a
   td.verify(objectCallback(), {times: 2})
 })
 
-test('obj with a prop that is an object, set prop to null, then set prop to a string. should trigger 2 callbacks', () => {
+test.skip('obj with a prop that is an object, set prop to null, then set prop to a string. should trigger 2 callbacks', () => {
   const obj = {
     prop: {},
   }
