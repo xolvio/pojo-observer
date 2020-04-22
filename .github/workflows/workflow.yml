@@ -8,3 +8,8 @@ jobs:
       - uses: bahmutov/npm-install@v1
       - run: npm run type-check
       - run: npm run test
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npx semantic-release
