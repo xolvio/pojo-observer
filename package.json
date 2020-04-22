@@ -81,11 +81,12 @@
     "domain-driven-design",
     "clean-architecture",
     "cqrs"
-  ],  "husky": {
-  "hooks": {
-    "pre-commit": "lint-staged"
-  }
-},
+  ],
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
   "lint-staged": {
     "src/*.ts*": [
       "eslint --fix",
