@@ -1,20 +1,15 @@
 export class File {
-  constructor(
-    private _filename: string,
-    private _content: string,
-    private _createdAt: Date
-  ) {
+  name: string
+  path: string
+  content: string
+  selected: boolean
+  constructor(name: string,  content: string, path: string) {
+    this.name = name
+    this.path = path
+    this.content = content
+    this.selected = false
   }
-
-  get filename() {
-    return this._filename
-  }
-
-  get content() {
-    return this._content
-  }
-
-  get createdAt() {
-    return this._createdAt
+  get canonicalPath () {
+    return this.path + this.name
   }
 }

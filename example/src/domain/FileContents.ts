@@ -1,8 +1,7 @@
 import {File} from './File'
 
-export class FileDetails {
+export default class FileContents {
   file?: File
-
   setFile(file: File) {
     this.file = file
   }
@@ -11,7 +10,7 @@ export class FileDetails {
     return this.file ? this.file.name : ''
   }
 
-  get path() {
-    return this.file ? this.file.path : ''
+  get content() {
+    return this.file ? this.file.content : ''
   }
 }

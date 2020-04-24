@@ -8,6 +8,6 @@ export class FileContent {
   }
 
   get content() {
-    return this._file.content
+    return this._file?.content
   }
 }
