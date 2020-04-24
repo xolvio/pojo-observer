@@ -1,10 +1,10 @@
 import * as React from 'react';
-import useObserver from '../../../src/index'
+import useObserver from '../useObserver'
 import {IFileContent} from '../root'
 
 const FileContent: React.FC<IFileContent> = (props) => {
-  const fileContent = props.fileContent
-  useObserver(props.fileContent)
+  const {fileContent} = props
+  useObserver(fileContent)
   return (
     <div className={"file-content"}>
       <h1>File Content</h1>

@@ -1,7 +1,7 @@
 import React from 'react';
 import './Workspace.css';
-import FileTree from '../components/FileTree'
-import FileContent from '../components/FileContent'
+import FileTree from './FileTree'
+import FileContent from './FileContentView'
 import FileDetails from '../components/FileDetails'
 import root from '../root'
 

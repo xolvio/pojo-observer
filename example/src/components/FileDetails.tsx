@@ -1,5 +1,5 @@
 import * as React from 'react';
-import useObserver from '../../../src/index'
+import useObserver from '../useObserver'
 import {IFileDetails} from '../root'
 
 const FileDetails: React.FC<IFileDetails> = (props) => {
