@@ -38,6 +38,8 @@ export class MemoryFileRepository implements IFileRepository {
     return this._counter
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+  // @ts-ignore
   async getFiles(): Promise<File[]> {
     return new Promise((resolve) =>
       setTimeout(() => {
