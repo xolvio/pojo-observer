@@ -62,6 +62,7 @@
     "babel-jest": "^24.9.0",
     "browserslist": "^4.12.0",
     "cucumber": "^5.1.0",
+    "cz-conventional-changelog": "3.1.0",
     "eslint": "^6.8.0",
     "eslint-config-airbnb": "^18.1.0",
     "eslint-config-airbnb-base": "^14.1.0",
@@ -100,6 +101,7 @@
   ],
   "husky": {
     "hooks": {
+      "prepare-commit-msg": "exec < /dev/tty && git cz --hook || true",
       "pre-commit": "yarn type-check && yarn test:example:domain && lint-staged"
     }
   },
@@ -120,5 +122,10 @@
   },
   "browserslist": [
     "defaults"
-  ]
+  ],
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
 }
