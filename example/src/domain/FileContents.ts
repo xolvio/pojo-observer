@@ -1,7 +1,8 @@
 import {File} from './File'
 
-export default class FileContents {
+export class FileContents {
   file?: File
+
   setFile(file: File) {
     this.file = file
   }

@@ -39,7 +39,7 @@ export class MemoryFileRepository implements IFileRepository {
   }
 
   async getFiles(): Promise<File[]> {
-    await new Promise((resolve) =>
+    return new Promise((resolve) =>
       setTimeout(() => {
         resolve(this.files)
       }, 1000)

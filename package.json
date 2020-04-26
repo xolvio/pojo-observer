@@ -98,7 +98,7 @@
   ],
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged"
+      "pre-commit": "yarn test:example:domain && lint-staged"
     }
   },
   "lint-staged": {
