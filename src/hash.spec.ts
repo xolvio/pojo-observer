@@ -1,8 +1,10 @@
+/* eslint-disable max-classes-per-file */
 import hash from './hash'
 
 describe('hash', () => {
   class Foo {
     public x: any
+
     public y: any
 
     constructor(x, y) {
@@ -13,6 +15,7 @@ describe('hash', () => {
 
   class Bar {
     public x: any
+
     public y: any
 
     constructor(x, y) {
@@ -45,7 +48,7 @@ describe('hash', () => {
 
     expect(hash(foo1)).toEqual(hash(foo2))
   })
-  it('should return a different hash for different classes with the same values', function() {
+  it('should return a different hash for different classes with the same values', function () {
     const foo = new Foo(1, 2)
     const bar = new Bar(1, 2)
 

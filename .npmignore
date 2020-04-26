@@ -1,6 +1,6 @@
-.idea
 node_modules
 coverage
-lib/
 dist/
 .cache
+example/
+.github

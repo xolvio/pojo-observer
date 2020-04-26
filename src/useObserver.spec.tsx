@@ -1,7 +1,9 @@
+/* eslint-disable max-classes-per-file,react/button-has-type,no-plusplus */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import * as React from 'react'
-import useObserver from './useObserver'
+import {FunctionComponent} from 'react'
 import {render, act} from '@testing-library/react'
+import useObserver from './useObserver'
 import '@testing-library/jest-dom/extend-expect'
 import {addHash} from './addHash'
 
@@ -28,7 +30,7 @@ test('add hash internally', () => {
         <button onClick={(): void => model.previous()}>
           Change the numbers in first component
         </button>
-        <div data-testid={'numberInFirst'}>{model.getCurrent()}</div>
+        <div data-testid="numberInFirst">{model.getCurrent()}</div>
       </div>
     )
   }
@@ -41,7 +43,7 @@ test('add hash internally', () => {
         <button onClick={(): void => model.previous()}>
           Change in the other component
         </button>
-        <div data-testid={'numberInOther'}>{model.getCurrent()}</div>
+        <div data-testid="numberInOther">{model.getCurrent()}</div>
       </div>
     )
   }
@@ -71,15 +73,17 @@ test('add hash internally', () => {
 test('that it can work with objects', () => {
   const obj = {
     foo: 'here',
-    mutateMe: (): string => (obj.foo = 'there')
+    mutateMe: () => {
+      obj.foo = 'there'
+    },
   }
 
-  function ComponentUsingModel({model}) {
+  const ComponentUsingModel = ({model}: {model: typeof obj}) => {
     useObserver(model)
 
     return (
       <div>
-        <div data-testid={'foo'}>{model.foo}</div>
+        <div data-testid="foo">{model.foo}</div>
       </div>
     )
   }
@@ -96,22 +100,32 @@ test('that it can work with objects', () => {
 test('that it can work with multiple objects', () => {
   const obj1 = {
     foo: 'here',
-    mutateMe: (): string => (obj1.foo = 'there')
+    mutateMe: () => {
+      obj1.foo = 'there'
+    },
   }
 
   const obj2 = {
     bar: 'pete',
-    mutateMe: (): string => (obj2.bar = 'paul')
+    mutateMe: () => {
+      obj2.bar = 'paul'
+    },
   }
 
-  function ComponentUsingModel({model1, model2}) {
+  function ComponentUsingModel({
+    model1,
+    model2,
+  }: {
+    model1: typeof obj1
+    model2: typeof obj2
+  }) {
     useObserver(model1)
     useObserver(model2)
 
     return (
       <div>
-        <div data-testid={'foo'}>{model1.foo}</div>
-        <div data-testid={'bar'}>{model2.bar}</div>
+        <div data-testid="foo">{model1.foo}</div>
+        <div data-testid="bar">{model2.bar}</div>
       </div>
     )
   }
@@ -136,30 +150,34 @@ test('that it can work with multiple objects', () => {
 test('that it can work with multiple objects', () => {
   const obj1 = {
     foo: 'here',
-    mutateMe: (): string => (obj1.foo = 'there')
+    mutateMe: () => {
+      obj1.foo = 'there'
+    },
   }
 
   const obj2 = {
     bar: 'pete',
-    mutateMe: (): string => (obj2.bar = 'paul')
+    mutateMe: () => {
+      obj2.bar = 'paul'
+    },
   }
 
-  function ComponentUsingModel1({model}) {
+  function ComponentUsingModel1({model}: {model: typeof obj1}) {
     useObserver(model)
 
     return (
       <div>
-        <div data-testid={'foo'}>{model.foo}</div>
+        <div data-testid="foo">{model.foo}</div>
       </div>
     )
   }
 
-  function ComponentUsingModel2({model}) {
+  function ComponentUsingModel2({model}: {model: typeof obj2}) {
     useObserver(model)
 
     return (
       <div>
-        <div data-testid={'bar'}>{model.bar}</div>
+        <div data-testid="bar">{model.bar}</div>
       </div>
     )
   }
@@ -202,7 +220,7 @@ test('add hash explicitly', () => {
         <button onClick={() => methods.previous()}>
           Change the numbers in first component
         </button>
-        <div data-testid={'numberInFirst'}>{methods.getCurrent()}</div>
+        <div data-testid="numberInFirst">{methods.getCurrent()}</div>
       </div>
     )
   }
@@ -215,7 +233,7 @@ test('add hash explicitly', () => {
         <button onClick={() => methods.previous()}>
           Change in the other component
         </button>
-        <div data-testid={'numberInOther'}>{methods.getCurrent()}</div>
+        <div data-testid="numberInOther">{methods.getCurrent()}</div>
       </div>
     )
   }
@@ -278,7 +296,7 @@ test('have a global model', async () => {
         <button onClick={() => methods.previous()}>
           Change the numbers in first component
         </button>
-        <div data-testid={'numberInFirst'}>{methods.getCurrent()}</div>
+        <div data-testid="numberInFirst">{methods.getCurrent()}</div>
       </div>
     )
   }
@@ -291,7 +309,7 @@ test('have a global model', async () => {
         <button onClick={() => methods.previous()}>
           Change in the other component
         </button>
-        <div data-testid={'numberInOther'}>{methods.getCurrent()}</div>
+        <div data-testid="numberInOther">{methods.getCurrent()}</div>
       </div>
     )
   }
@@ -365,8 +383,7 @@ test('nested classes', () => {
         <button onClick={() => methods.previous()}>
           Change the numbers in first component
         </button>
-        <div data-testid={'numberInFirst'}>{methods.getCurrent()}</div>
-        )}
+        <div data-testid="numberInFirst">{methods.getCurrent()}</div>
       </div>
     )
   }
@@ -379,7 +396,7 @@ test('nested classes', () => {
         <button onClick={() => methods.previous()}>
           Change in the other component
         </button>
-        <div data-testid={'numberInOther'}>{methods.getCurrent()}</div>
+        <div data-testid="numberInOther">{methods.getCurrent()}</div>
       </div>
     )
   }
@@ -418,7 +435,9 @@ test('nested classes', () => {
 test('Changing a state of one model should not re-render a react component using a different model', () => {
   const firstModel = {
     foo: 'here',
-    mutateMe: (): string => (firstModel.foo = 'there')
+    mutateMe: () => {
+      firstModel.foo = 'there'
+    },
   }
 
   let firstComponentRerunTimes = 0
@@ -429,19 +448,19 @@ test('Changing a state of one model should not re-render a react component using
 
     return (
       <div>
-        <div data-testid={'foo'}>{firstModel.foo}</div>
+        <div data-testid="foo">{firstModel.foo}</div>
       </div>
     )
   }
 
   const otherModel = {
     someValue: 'someString',
-    changeMe: function(): void {
+    changeMe(): void {
       this.someValue = 'otherString'
     },
-    getRerunTimes: function(): string {
+    getRerunTimes(): string {
       return this.someValue
-    }
+    },
   }
 
   let differentComponentRerunTimes = 0
@@ -483,7 +502,7 @@ test('it should re-render when null fields are set to a value', () => {
   function Component() {
     useObserver(object)
     return (
-      <div data-testid={'foo'}>
+      <div data-testid="foo">
         {object.field === null ? 'null' : object.field}
       </div>
     )
@@ -504,7 +523,7 @@ test('it should re-render when null fields are set to an object whose value chan
   function Component() {
     useObserver(object)
     return (
-      <div data-testid={'foo'}>
+      <div data-testid="foo">
         {object.field === null ? 'null' : object.field.nested.deep}
       </div>
     )
@@ -516,8 +535,8 @@ test('it should re-render when null fields are set to an object whose value chan
   act(() => {
     object.field = {
       nested: {
-        deep: 'value'
-      }
+        deep: 'value',
+      },
     }
   })
   expect(getByTestId('foo')).toHaveTextContent('value')
@@ -527,13 +546,18 @@ test('it should re-render when null fields are set to an object whose value chan
   expect(getByTestId('foo')).toHaveTextContent('fathoms')
 })
 
-test('it should re-render when multi-level depth fields are set to an object whose value changes', () => {
+test('it should re-render when multi-level depth fields are set to an object whose value changes - no proxy', () => {
   const object = {field: null}
 
   function Component() {
     useObserver(object)
+    console.log(
+      'GOZDECKI object.field.nested.deep.very',
+      object?.field?.nested.deep.very
+    )
+
     return (
-      <div data-testid={'foo'}>
+      <div data-testid="foo">
         {object.field === null ? 'null' : object.field.nested.deep.very}
       </div>
     )
@@ -545,18 +569,19 @@ test('it should re-render when multi-level depth fields are set to an object who
   act(() => {
     object.field = {
       nested: {
-        deep: 'value'
-      }
+        deep: 'value',
+      },
     }
   })
   act(() => {
     object.field.nested = {
       deep: {
-        very: 'deeper'
-      }
+        very: 'deeper',
+      },
     }
   })
 
+  console.log('GOZDECKI object.field.nested.deep', object.field.nested.deep)
   expect(getByTestId('foo')).toHaveTextContent('deeper')
   act(() => {
     object.field.nested.deep.very = 'fathoms'
@@ -569,7 +594,7 @@ test('it should re-render when array values change', () => {
 
   function Component() {
     useObserver(object)
-    return <div data-testid={'foo'}>{object.arr.toString()}</div>
+    return <div data-testid="foo">{object.arr.toString()}</div>
   }
 
   const {getByTestId} = render(<Component />)
@@ -590,11 +615,11 @@ describe.skip('pending edge-cases', () => {
 
     function Component() {
       useObserver(object)
-      return <div data-testid={'foo'}>{object.arr[0].hello}</div>
+      return <div data-testid="foo">{object.arr[0].hello}</div>
     }
 
     object.arr[0] = {
-      hello: 'world'
+      hello: 'world',
     }
 
     const {getByTestId} = render(<Component />)
@@ -604,46 +629,49 @@ describe.skip('pending edge-cases', () => {
     expect(getByTestId('foo')).toHaveTextContent('there')
   })
 
-  test('it should re-render when multi-level depth fields are set to an object whose value changes - new field', () => {
-    const object = {}
-
-    function Component() {
-      useObserver(object)
-      return (
-        <div data-testid={'foo'}>
-          {object &&
-          object['field'] &&
-          object['field'].nested &&
-          object['field'].nested.deep
-            ? object['field'].nested.deep.very
-            : 'null'}
-        </div>
-      )
-    }
-
-    const {getByTestId} = render(<Component />)
-
-    expect(getByTestId('foo')).toHaveTextContent('null')
-    act(() => {
-      object['field'] = {
-        nested: {
-          deep: 'value'
-        }
-      }
-
-      object['field'].nested = {
-        deep: {
-          very: 'deeper'
-        }
-      }
-    })
-
-    expect(getByTestId('foo')).toHaveTextContent('deeper')
-    act(() => {
-      object['field'].nested.deep.very = 'fathoms'
-    })
-    expect(getByTestId('foo')).toHaveTextContent('fathoms')
-  })
+  // test('it should re-render when multi-level depth fields are set to an object whose value changes - new field', () => {
+  //   const object = {}
+  //
+  //   function Component() {
+  //     useObserver(object)
+  //     return (
+  //       <div data-testid="foo">
+  //         {object &&
+  //         object.field &&
+  //         object.field.nested &&
+  //         object.field.nested.deep
+  //           ? object.field.nested.deep.very
+  //           : 'null'}
+  //       </div>
+  //     )
+  //   }
+  //
+  //   const {getByTestId} = render(<Component />)
+  //
+  //   expect(getByTestId('foo')).toHaveTextContent('null')
+  //   act(() => {
+  //     // @ts-ignore
+  //     object.field = {
+  //       nested: {
+  //         deep: 'value',
+  //       },
+  //     }
+  //
+  //     // @ts-ignore
+  //     object.field.nested = {
+  //       deep: {
+  //         very: 'deeper',
+  //       },
+  //     }
+  //   })
+  //
+  //   expect(getByTestId('foo')).toHaveTextContent('deeper')
+  //   act(() => {
+  //     // @ts-ignore
+  //     object.field.nested.deep.very = 'fathoms'
+  //   })
+  //   expect(getByTestId('foo')).toHaveTextContent('fathoms')
+  // })
 })
 
 test('unmounting one component does not cause other components to be unsubscribed', () => {
@@ -665,7 +693,7 @@ test('unmounting one component does not cause other components to be unsubscribe
         <button onClick={() => methods.previous()}>
           Change the numbers in first component
         </button>
-        <div data-testid={'numberInFirst'}>{methods.current}</div>
+        <div data-testid="numberInFirst">{methods.current}</div>
       </div>
     )
   }
@@ -678,7 +706,7 @@ test('unmounting one component does not cause other components to be unsubscribe
         <button onClick={() => methods.previous()}>
           Change in the other component
         </button>
-        <div data-testid={'numberInOther'}>{methods.current}</div>
+        <div data-testid="numberInOther">{methods.current}</div>
       </div>
     )
   }
