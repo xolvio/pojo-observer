@@ -1,7 +1,8 @@
+import 'regenerator-runtime/runtime'
 import * as React from 'react'
 import ReactDOM from 'react-dom'
-import './index.css';
-import Workspace from './components/Workspace';
+import './index.css'
+import Workspace from './components/Workspace'
 import root from './root'
 
 root.workspaceService.init()
@@ -12,6 +13,4 @@ ReactDOM.render(
     <Workspace />
   </React.StrictMode>,
   document.getElementById('root')
-);
-
-
+)

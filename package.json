@@ -50,9 +50,9 @@
     "@babel/preset-env": "^7.2.3",
     "@babel/preset-react": "^7.0.0",
     "@babel/preset-typescript": "^7.9.0",
+    "@testing-library/dom": "^7.2.1",
     "@testing-library/jest-dom": "^5.1.0",
     "@testing-library/react": "^9.4.0",
-    "@testing-library/dom": "^7.2.1",
     "@testing-library/user-event": "^7.1.2",
     "@types/jest": "^25.1.1",
     "@types/node": "~12.12.23",
@@ -81,11 +81,12 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.1",
+    "regenerator-runtime": "^0.13.5",
+    "semantic-release": "^17.0.7",
     "sort-package-json": "^1.42.1",
     "testdouble": "^3.12.5",
     "ts-node": "^8.8.2",
     "typescript": "^3.8.3",
-    "semantic-release": "^17.0.7",
     "watch": "^1.0.2"
   },
   "peerDependencies": {
@@ -99,19 +100,17 @@
   ],
   "husky": {
     "hooks": {
-      "pre-commit": "yarn test:example:domain && lint-staged"
+      "pre-commit": "yarn type-check && yarn test:example:domain && lint-staged"
     }
   },
   "lint-staged": {
     "src/*.ts*": [
       "eslint --fix",
-      "jest --findRelatedTests",
-      "tsc --noEmit"
+      "jest --findRelatedTests"
     ],
     "example/**/*.ts*": [
       "eslint --fix",
-      "jest --findRelatedTests",
-      "tsc --noEmit"
+      "jest --findRelatedTests"
     ]
   },
   "jest": {
@@ -120,6 +119,6 @@
     ]
   },
   "browserslist": [
-    "> 2%, not dead"
+    "defaults"
   ]
 }
