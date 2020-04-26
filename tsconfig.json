@@ -3,7 +3,7 @@
     "module": "commonjs",
     "target": "es6",
     "sourceMap": true,
-    "outDir": "../lib/",
+    "outDir": "./lib/",
     "esModuleInterop": true,
     "jsx": "react"
   },
