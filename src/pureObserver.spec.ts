@@ -6,22 +6,27 @@ test('it reacts to a change', () => {
   const object = {test: 'abc'}
   const obj1Callback = td.func() as () => void
   pureObserver(object, obj1Callback)
+  td.verify(obj1Callback(), {times: 0})
 
   object.test = 'def'
-  td.verify(obj1Callback())
+  expect(object.test).toEqual('def')
+  td.verify(obj1Callback(), {times: 1})
   object.test = 'there'
+  expect(object.test).toEqual('there')
   td.verify(obj1Callback(), {times: 2})
 })
 
 test('that it can work with multiple objects, no react', () => {
   const obj1 = {
     foo: 'here',
+    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     mutateMe: () => {
       obj1.foo = 'there'
     },
   }
   const obj2 = {
     bar: 'pete',
+    // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
     mutateMe: () => {
       obj2.bar = 'paul'
     },
@@ -46,16 +51,16 @@ test('it should callback for changes in objects added to arrays', () => {
   pureObserver(object, obj1Callback)
   // FIXME - get rid of the initial callback
 
-  td.verify(obj1Callback(), {times: 1})
+  td.verify(obj1Callback(), {times: 0})
 
   object.arr[0] = {
     hello: 'world',
   }
-  td.verify(obj1Callback(), {times: 2})
+  td.verify(obj1Callback(), {times: 1})
 
   object.arr[0].hello = 'there'
 
-  td.verify(obj1Callback(), {times: 3})
+  td.verify(obj1Callback(), {times: 2})
 })
 
 test('it should callback for changes in objects added to arrays before observer is attached', () => {
@@ -67,12 +72,11 @@ test('it should callback for changes in objects added to arrays before observer 
   pureObserver(object, obj1Callback)
   // FIXME - callback should not happen right after observing
 
-  td.verify(obj1Callback(), {times: 1})
+  td.verify(obj1Callback(), {times: 0})
 
   object.arr[0].hello = 'there'
-  // FIXME - callback should happen only once
 
-  td.verify(obj1Callback(), {times: 3})
+  td.verify(obj1Callback(), {times: 2})
 })
 
 test('it should callback for changes in objects added to arrays before observer is attached', () => {
@@ -91,28 +95,6 @@ test('it should callback for changes in objects added to arrays before observer 
   td.verify(obj1Callback())
 })
 
-test('it should observe provided arrays that overwrite internal arrays', () => {
-  const arr = []
-  const obj1 = {arr: []}
-  const obj1Callback = td.func()
-  obj1.arr = arr
-  pureObserver(obj1, obj1Callback)
-
-  arr.push('boo')
-
-  td.verify(obj1Callback())
-})
-
-test('overwrite array with something else', () => {
-  const obj1 = {innerObj: {}, files: []}
-  const obj1Callback = td.func()
-  pureObserver(obj1, obj1Callback)
-  td.verify(obj1Callback(), {times: 1})
-
-  obj1.files = ['sdg']
-  td.verify(obj1Callback(), {times: 2})
-})
-
 test('changing the value of an inner object', () => {
   const obj1 = {innerObj: {}}
   const obj1Callback = td.func()
@@ -122,16 +104,6 @@ test('changing the value of an inner object', () => {
   // @ts-ignore
   obj1.innerObj.test = 's'
   td.verify(obj1Callback(), {times: 1})
-})
-
-test('changing the assignment from array to a different array', () => {
-  const obj1 = {files: []}
-  const obj1Callback = td.func()
-  pureObserver(obj1, obj1Callback)
-  td.verify(obj1Callback(), {times: 1})
-
-  obj1.files = ['sdg']
-  td.verify(obj1Callback(), {times: 2})
 })
 
 test('undefined array', () => {
@@ -170,34 +142,6 @@ test('it should observe provided objects that create new internal objects', () =
   innerObj.foo = 'bar'
 
   td.verify(obj1Callback(), {times: 1})
-})
-
-test('it should observe provided external arrays', () => {
-  const arr = []
-  const obj1 = {arr}
-
-  const obj1Callback = td.func()
-  pureObserver(obj1, obj1Callback)
-
-  td.verify(obj1Callback(), {times: 1})
-
-  obj1.arr.push('boo')
-
-  td.verify(obj1Callback(), {times: 2})
-})
-
-test('it should observe provided internal arrays', () => {
-  const obj1 = {
-    arr: [],
-  }
-
-  const obj1Callback = td.func()
-  pureObserver(obj1, obj1Callback)
-
-  td.verify(obj1Callback(), {times: 1})
-
-  obj1.arr.push('boo')
-  td.verify(obj1Callback(), {times: 2})
 })
 
 test('multi-level depth fields are set to an object whose value changes', () => {
@@ -387,10 +331,14 @@ test('Setting null to an already null value, then setting a real value should tr
   }
   const objectCallback = td.func()
   pureObserver(obj, objectCallback)
+  td.verify(objectCallback(), {times: 0})
 
   obj.nullValue = null
+  expect(obj.nullValue).toEqual(null)
+  td.verify(objectCallback(), {times: 0})
 
   obj.nullValue = 'something'
+  expect(obj.nullValue).toEqual('something')
 
   td.verify(objectCallback(), {times: 1})
 })
@@ -402,7 +350,10 @@ test('Setting null to an assigned property should trigger a callback', () => {
   const objectCallback = td.func()
   pureObserver(obj, objectCallback)
 
+  td.verify(objectCallback(), {times: 0})
+
   obj.nullValue = null
+  expect(obj.nullValue).toEqual(null)
 
   td.verify(objectCallback(), {times: 1})
 })
@@ -414,52 +365,133 @@ test('Setting null to an assigned property, then setting a real value should tri
   const objectCallback = td.func()
   pureObserver(obj, objectCallback)
 
+  td.verify(objectCallback(), {times: 0})
+
   obj.nullValue = null
+  expect(obj.nullValue).toEqual(null)
 
   td.verify(objectCallback(), {times: 1})
 
   obj.nullValue = 'something'
+  expect(obj.nullValue).toEqual('something')
 
   td.verify(objectCallback(), {times: 2})
 })
 
-test('Setting null to an existing property and observe, then setting a real value should trigger a callback', () => {
+test('Arrays pop', () => {
   const obj = {
-    prop: {},
+    arr: ['a'],
   }
-  const objectCallback = td.func()
-  pureObserver(obj, objectCallback)
+  const obj1Callback = td.func()
+  pureObserver(obj, obj1Callback)
 
-  obj.prop = null
+  const p = obj.arr.pop()
+  expect(p).toEqual('a')
 
-  td.verify(objectCallback(), {times: 1})
+  expect(obj.arr).toHaveLength(0)
+
+  td.verify(obj1Callback(), {times: 1})
 })
 
-test('obj with a prop that is an object, set prop to null, then set prop to a object. should trigger 2 callbacks', () => {
+test('Arrays splice', () => {
   const obj = {
-    prop: {},
+    arr: [],
   }
-  const objectCallback = td.func()
-  pureObserver(obj, objectCallback)
+  const obj1Callback = td.func()
+  pureObserver(obj, obj1Callback)
 
-  obj.prop = null
-  obj.prop = {}
+  obj.arr[0] = 'a'
+  obj.arr[1] = 'b'
+  obj.arr[2] = 'c'
+  obj.arr[3] = 'd'
 
-  td.verify(objectCallback(), {times: 2})
+  obj.arr.splice(2, 2)
+  expect(obj.arr).toHaveLength(2)
+  expect(obj.arr[0]).toEqual('a')
+  expect(obj.arr[1]).toEqual('b')
+
+  td.verify(obj1Callback(), {times: 5})
 })
 
-test('obj with a prop that is an object, set prop to null, then set prop to an array. should trigger 2 callbacks', () => {
-  const obj = {
-    prop: {},
-  }
-  const objectCallback = td.func()
-  pureObserver(obj, objectCallback)
+test('it should observe provided arrays that overwrite internal arrays', () => {
+  const arr = []
+  const obj1 = {arr: []}
+  const obj1Callback = td.func()
+  obj1.arr = arr
+  pureObserver(obj1, obj1Callback)
 
-  obj.prop = null
-  obj.prop = []
+  // requires no callback on 185
+  td.verify(obj1Callback(), {times: 0})
 
-  td.verify(objectCallback(), {times: 2})
+  obj1.arr.push('boo')
+  expect(obj1.arr[0]).toEqual('boo')
+  expect(obj1.arr).toHaveLength(1)
+
+  // requires callback on 185
+  td.verify(obj1Callback(), {times: 1})
 })
+
+test('overwrite array with something else', () => {
+  const obj1 = {innerObj: {}, arr: []}
+  const obj1Callback = td.func()
+  pureObserver(obj1, obj1Callback)
+
+  td.verify(obj1Callback(), {times: 0})
+
+  obj1.arr = ['sdg']
+  expect(obj1.arr[0]).toEqual('sdg')
+  expect(obj1.arr).toHaveLength(1)
+
+  td.verify(obj1Callback(), {times: 1})
+})
+
+test('changing the assignment from array to a different array', () => {
+  const obj1 = {arr: []}
+  const obj1Callback = td.func()
+  pureObserver(obj1, obj1Callback)
+  // requires no callback on 185
+  td.verify(obj1Callback(), {times: 0})
+
+  obj1.arr = ['sdg']
+  expect(obj1.arr[0]).toEqual('sdg')
+  expect(obj1.arr).toHaveLength(1)
+
+  td.verify(obj1Callback(), {times: 1})
+})
+
+test('it should observe provided external arrays', () => {
+  const arr = []
+  const obj1 = {arr}
+
+  const obj1Callback = td.func()
+  pureObserver(obj1, obj1Callback)
+
+  // requires no callback on 185
+  td.verify(obj1Callback(), {times: 0})
+
+  obj1.arr.push('boo')
+  expect(obj1.arr[0]).toEqual('boo')
+  expect(obj1.arr).toHaveLength(1)
+
+  // requires callback on 185
+  td.verify(obj1Callback(), {times: 1})
+})
+
+test('it should observe provided internal arrays', () => {
+  const obj1 = {arr: []}
+
+  const obj1Callback = td.func()
+  pureObserver(obj1, obj1Callback)
+
+  // requires no callback on 185
+  td.verify(obj1Callback(), {times: 0})
+
+  obj1.arr.push('boo')
+  // requires callback on 185
+  td.verify(obj1Callback(), {times: 1})
+})
+
+// - - OUTSTANDING BUGS - -
 
 test.skip('obj with a prop that is an object, set prop to null, then set prop to a string. should trigger 2 callbacks', () => {
   const obj = {
@@ -469,7 +501,70 @@ test.skip('obj with a prop that is an object, set prop to null, then set prop to
   pureObserver(obj, objectCallback)
 
   obj.prop = null
+  expect(obj.prop).toBeNull()
   obj.prop = 'asd'
+  expect(obj.prop).toEqual('asd')
 
   td.verify(objectCallback(), {times: 2})
+})
+
+test.skip('obj with a prop that is an object, set prop to null, then set prop to an array. should trigger 2 callbacks', () => {
+  const obj = {
+    prop: {},
+  }
+  const objectCallback = td.func()
+  pureObserver(obj, objectCallback)
+
+  obj.prop = null
+  expect(obj.prop).toBeNull()
+  obj.prop = []
+  expect(obj.prop).toEqual([])
+
+  td.verify(objectCallback(), {times: 2})
+})
+
+test.skip('obj with a prop that is an object, set prop to null, then set prop to a object. should trigger 2 callbacks', () => {
+  const obj = {
+    prop: {},
+  }
+  const objectCallback = td.func()
+  pureObserver(obj, objectCallback)
+
+  obj.prop = null
+  expect(obj.prop).toBeNull()
+  obj.prop = {}
+  expect(obj.prop).toEqual({})
+
+  td.verify(objectCallback(), {times: 2})
+})
+
+test.skip('Setting null to an existing property and observe, then setting a real value should trigger a callback', () => {
+  const obj = {
+    prop: {},
+  }
+  const objectCallback = td.func()
+  pureObserver(obj, objectCallback)
+
+  td.verify(objectCallback(), {times: 0})
+
+  obj.prop = null
+  expect(obj.prop).toBeNull()
+
+  td.verify(objectCallback(), {times: 1})
+})
+
+// - - UNSUPPORTED - -
+
+test.skip('THIS WILL NEVER WORK - UNSUPPORTED AS ARRAY IS CHANGED OUTSIDE OF OBSERVED OBJECT', () => {
+  const arr = []
+  const obj1 = {arr: []}
+  const obj1Callback = td.func()
+  obj1.arr = arr
+  pureObserver(obj1, obj1Callback)
+
+  td.verify(obj1Callback(), {times: 0})
+
+  arr.push('boo')
+
+  td.verify(obj1Callback(), {times: 1})
 })

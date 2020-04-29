@@ -73,7 +73,6 @@ function isWriteableArray(object, fieldName): boolean {
 function attachProxyToProperties(model: Model, callback: Function, id?): void {
   // *** SAM CHANGE 1 - replaced this: if (!model.__proxyAttached) {
   if (model && !model.__proxyAttached) {
-
     // eslint-disable-next-line no-param-reassign
     model.__proxyAttached = true
     getFieldNames(model).forEach((field) => {
@@ -96,74 +95,82 @@ function attachProxyToField(
   callback,
   id
 ): void {
-  if (fieldName !== '__proxyAttached') {
-    try {
-      let newProxy = new Proxy(object[fieldName], {
-        get(target, property): object {
-          return target[property]
-        },
-        set(target, property, value): boolean {
-          if (property !== '__proto__' && property !== 'length') {
-            if (typeof value === 'object') {
-              attachProxyToProperties(value, callback, id)
-            }
-            // eslint-disable-next-line no-param-reassign
-            target[property] = value
-            callback()
-          }
-          return true
-        },
-      })
+  if (fieldName === '__proxyAttached') return
 
-      Object.defineProperty(object, fieldName, {
-        configurable: true,
-        enumerable: true,
-        get: () => {
-          return newProxy
-        },
-        set: (value) => {
-          if (!value) return callback() // *** SAM CHANGE 3
-          if (typeof value === 'object' && !Array.isArray(value)) {
+  try {
+    let newProxy = new Proxy(object[fieldName], {
+      get(target, property): object {
+        return target[property]
+      },
+      set(target, property, value): boolean {
+        if (property !== '__proto__' && property !== 'length') {
+          if (typeof value === 'object') {
             attachProxyToProperties(value, callback, id)
           }
-          newProxy = new Proxy(value, {
-            get(target, property): object {
-              return target[property]
-            },
-            set(target, property, innerValue): boolean {
-              if (property !== '__proto__' && property !== 'length') {
-                if (typeof innerValue === 'object') {
-                  attachProxyToProperties(innerValue, callback, id)
-                }
-                // eslint-disable-next-line no-param-reassign
-                target[property] = innerValue
-                callback()
-              }
-              return true
-            },
-          })
+          // eslint-disable-next-line no-param-reassign
+          target[property] = value
           callback()
-        },
-      })
-    } catch (e) {
-      // This if doesn't seem to make any difference
-      if (fieldName !== 'length') {
-        Object.defineProperty(object, fieldName, {
-          configurable: true,
-          enumerable: true,
-          get: () => originalField,
-          set: (value) => {
-            if (originalField === value) return // *** SAM CHANGE 2
-            if (typeof value === 'object' && !Array.isArray(value)) {
-              attachProxyToProperties(value, callback, id)
+        }
+        return true
+      },
+    })
+
+    Object.defineProperty(object, fieldName, {
+      configurable: true,
+      enumerable: true,
+      get: () => {
+        return newProxy
+      },
+      set: (value) => {
+        if (typeof value === 'object' && !Array.isArray(value)) {
+          attachProxyToProperties(value, callback, id)
+        }
+
+        // NON WORKING FIX FOR BUGS RELATED TO SETTING AN OBJECT FILED TO NULL OR A PRIMITIVE
+        if (typeof value !== 'object' || value === null) {
+          throw new Error('pojo-observer: Unsupported operation.')
+          // how do we handle non object types here?
+          // ideally we'll just set the value like this:
+          // object[fieldName] = value // but this causes a stack overflow
+          // callback()
+          // return true
+        }
+
+        newProxy = new Proxy(value, {
+          get(target, property): object {
+            return target[property]
+          },
+          set(target, property, innerValue): boolean {
+            if (property !== '__proto__' && property !== 'length') {
+              if (typeof innerValue === 'object') {
+                attachProxyToProperties(innerValue, callback, id)
+              }
+              // eslint-disable-next-line no-param-reassign
+              target[property] = innerValue
+              callback()
             }
-            // eslint-disable-next-line no-param-reassign
-            originalField = value
-            callback()
+            return true
           },
         })
-      }
-    }
+        return callback()
+      },
+    })
+  } catch (e) {
+    // This if doesn't seem to make any difference
+    Object.defineProperty(object, fieldName, {
+      configurable: true,
+      enumerable: true,
+      get: () => originalField,
+      set: (value) => {
+        if (originalField === value) return // *** SAM CHANGE 2
+        if (typeof value === 'object' && !Array.isArray(value)) {
+          attachProxyToProperties(value, callback, id)
+        }
+        // eslint-disable-next-line no-param-reassign
+        originalField = value
+        callback()
+      },
+    })
   }
 }
 
@@ -175,6 +182,8 @@ function attachProxyToArray(object, fieldName, callback, id): void {
 
   // eslint-disable-next-line no-param-reassign
   object[`____${fieldName}`] = object[fieldName]
+  let initialSetterLatch = true
+
   Object.defineProperty(object, fieldName, {
     configurable: true,
     enumerable: true,
@@ -182,6 +191,10 @@ function attachProxyToArray(object, fieldName, callback, id): void {
     set: (value) => {
       // eslint-disable-next-line no-param-reassign
       object[`____${fieldName}`] = value
+      if (initialSetterLatch) {
+        initialSetterLatch = false
+        return
+      }
       callback()
     },
   })
@@ -193,13 +206,20 @@ function attachProxyToArray(object, fieldName, callback, id): void {
       return target[property]
     },
     set(target, property, value): boolean {
-      if (property !== '__proto__' && property !== 'length') {
-        if (typeof value === 'object') {
-          attachProxyToProperties(value, callback, id)
-        }
+      if (property === 'length' && value !== target.length) {
         // eslint-disable-next-line no-param-reassign
         target[property] = value
         callback()
+        return true
+      }
+      if (property !== '__proto__') {
+        if (typeof value === 'object') {
+          attachProxyToProperties(value, callback, id)
+        }
+
+        // eslint-disable-next-line no-param-reassign
+        target[property] = value
+        if (property !== 'length') callback()
       }
       return true
     },
