@@ -22,8 +22,8 @@
     "type-check": "tsc --noEmit",
     "type-check:watch": "npm run type-check -- --watch",
     "build": "npm run build:types && npm run build:js",
-    "build:types": "cd src && tsc --declaration --emitDeclarationOnly --jsx react",
-    "build:js": "babel src --out-dir lib --extensions \".ts,.tsx\" --source-maps inline --ignore '**/*.spec.ts*,*/example'",
+    "build:types": "tsc -p tsconfig-build.json",
+    "build:js": "babel src --out-dir lib --ignore 'src/**/*.spec.ts','src/**/*.spec.tsx' --extensions \".ts,.tsx\" --source-maps inline ",
     "start:example": "parcel ./example/public/index.html"
   },
   "repository": {
