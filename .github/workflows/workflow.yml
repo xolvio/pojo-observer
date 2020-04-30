@@ -8,7 +8,6 @@ jobs:
       - uses: bahmutov/npm-install@v1
       - run: npm run type-check
       - run: npm run test
-      - run: pwd && ls -al
       - uses: paambaati/codeclimate-action@v2.6.0
         env:
           CC_TEST_REPORTER_ID: 8363f6771695c1066fba12480279030cf48383ac795fd50fd153178f0af45a98
