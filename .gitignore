@@ -5,3 +5,4 @@ lib/
 dist/
 .cache
 .nyc_output
+yarn-error.log
