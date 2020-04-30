@@ -6,7 +6,7 @@
     "Michal Baranowski"
   ],
   "version": "0.0.0-development",
-  "description": "## What? A minimalist object observer that works with React hooks.",
+  "description": "A minimalist object observer that works with React hooks.",
   "main": "lib/index.js",
   "directories": {
     "lib": "./lib"
