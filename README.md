@@ -1,4 +1,4 @@
-![](https://github.com/xolvio/pojo-observer/workflows/CI/badge.svg) [![Maintainability](https://api.codeclimate.com/v1/badges/608e9ae53feef2fa019d/maintainability)](https://codeclimate.com/github/xolvio/pojo-observer/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/608e9ae53feef2fa019d/test_coverage)](https://codeclimate.com/github/xolvio/pojo-observer/test_coverage)
+![](https://github.com/xolvio/pojo-observer/workflows/CI/badge.svg) [![Maintainability](https://api.codeclimate.com/v1/badges/608e9ae53feef2fa019d/maintainability)](https://codeclimate.com/github/xolvio/pojo-observer/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/608e9ae53feef2fa019d/test_coverage)](https://codeclimate.com/github/xolvio/pojo-observer/test_coverage) ![npm](https://img.shields.io/npm/v/pojo-observer) ![NPM](https://img.shields.io/npm/l/pojo-observer)
 
 
 # POJO Observer
