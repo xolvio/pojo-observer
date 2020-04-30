@@ -1,3 +1,6 @@
+![](https://github.com/xolvio/pojo-observer/workflows/CI/badge.svg)
+
+
 # POJO Observer
 
 ## What?
