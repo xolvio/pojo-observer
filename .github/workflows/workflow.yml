@@ -12,7 +12,6 @@ jobs:
         env:
           CC_TEST_REPORTER_ID: 8363f6771695c1066fba12480279030cf48383ac795fd50fd153178f0af45a98
         with:
-          coverageCommand: yarn coverage
           coverageLocations: |
             ${{github.workspace}}/coveragecoverage//lcov.info:lcov
             ${{github.workspace}}/cucumber/coverage/lcov.info:lcov
