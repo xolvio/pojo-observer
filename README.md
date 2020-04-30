@@ -114,7 +114,7 @@ You can also add as many other hooks like `useEffect` as you like as follows:
 ## How about nested objects, arrays, and arrays of objects?
 They work :)
 
-Check out the `useObserver.spec.tsx` file for details of the cases we've thought of. Can't promise that every single edge case is there, so please report any issues and we'll work on them.
+Check out the [`useObserver.spec.tsx`](./blob/master/src/useObserver.spec.tsx) file for the cases we've thought of. Please report any issues you find as a test if possible and we'll work on it.
 
 ## How is this different to [Redux](https://redux.js.org), [Flux](https://facebook.github.io/flux) and [MobX](https://mobx.js.org)
 This library and all the ones mentioned above are ultimately implementations of the [Observer Pattern](https://en.wikipedia.org/wiki/Observer_pattern). (Redux is more of a state management library but it also has an observer when using the Connect method). 
