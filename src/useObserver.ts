@@ -59,10 +59,13 @@ function isWriteableObjectField(object, fieldName): boolean {
   )
 }
 
+function isPrimitiveField(field): boolean {
+  return typeof field !== 'object' || field === null
+}
+
 function isWriteablePrimitiveField(object, fieldName): boolean {
   return (
-    isWritableField(object, fieldName) &&
-    (typeof object[fieldName] !== 'object' || object[fieldName] === null)
+    isWritableField(object, fieldName) && isPrimitiveField(object[fieldName])
   )
 }
 
@@ -126,14 +129,10 @@ function attachProxyToField(
           attachProxyToProperties(value, callback, id)
         }
 
-        // NON WORKING FIX FOR BUGS RELATED TO SETTING AN OBJECT FILED TO NULL OR A PRIMITIVE
-        if (typeof value !== 'object' || value === null) {
-          throw new Error('pojo-observer: Unsupported operation.')
-          // how do we handle non object types here?
-          // ideally we'll just set the value like this:
-          // object[fieldName] = value // but this causes a stack overflow
-          // callback()
-          // return true
+        if (isPrimitiveField(value)) {
+          newProxy = value
+          callback()
+          return true
         }
 
         newProxy = new Proxy(value, {

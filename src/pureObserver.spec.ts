@@ -523,81 +523,79 @@ test('it should observe provided arrays that overwrite internal arrays', () => {
   td.verify(obj1Callback(), {times: 1})
 })
 
-describe.skip('OUTSTANDING BUGS', () => {
-  test('obj with a prop that is an object, set prop to null, then set prop to a string. should trigger 2 callbacks', () => {
-    const obj = {prop: {}}
-    const objectCallback = td.func()
+test('obj with a prop that is an object, set prop to null, then set prop to a string. should trigger 2 callbacks', () => {
+  const obj = {prop: {}}
+  const objectCallback = td.func()
 
-    pureObserver(obj, objectCallback)
+  pureObserver(obj, objectCallback)
 
-    expect(obj.prop).toEqual({})
-    td.verify(objectCallback(), {times: 0})
+  expect(obj.prop).toEqual({})
+  td.verify(objectCallback(), {times: 0})
 
-    obj.prop = null
+  obj.prop = null
 
-    expect(obj.prop).toBeNull()
-    td.verify(objectCallback(), {times: 1})
+  expect(obj.prop).toBeNull()
+  td.verify(objectCallback(), {times: 1})
 
-    obj.prop = 'asd'
+  obj.prop = 'asd'
 
-    expect(obj.prop).toEqual('asd')
-    td.verify(objectCallback(), {times: 2})
-  })
+  expect(obj.prop).toEqual('asd')
+  td.verify(objectCallback(), {times: 2})
+})
 
-  test('obj with a prop that is an object, set prop to null, then set prop to an array. should trigger 2 callbacks', () => {
-    const obj = {prop: {}}
-    const objectCallback = td.func()
+test('obj with a prop that is an object, set prop to null, then set prop to an array. should trigger 2 callbacks', () => {
+  const obj = {prop: {}}
+  const objectCallback = td.func()
 
-    pureObserver(obj, objectCallback)
+  pureObserver(obj, objectCallback)
 
-    expect(obj.prop).toEqual({})
-    td.verify(objectCallback(), {times: 0})
+  expect(obj.prop).toEqual({})
+  td.verify(objectCallback(), {times: 0})
 
-    obj.prop = null
+  obj.prop = null
 
-    expect(obj.prop).toBeNull()
-    td.verify(objectCallback(), {times: 1})
+  expect(obj.prop).toBeNull()
+  td.verify(objectCallback(), {times: 1})
 
-    obj.prop = []
+  obj.prop = []
 
-    expect(obj.prop).toEqual([])
-    td.verify(objectCallback(), {times: 2})
-  })
+  expect(obj.prop).toEqual([])
+  td.verify(objectCallback(), {times: 2})
+})
 
-  test('obj with a prop that is an object, set prop to null, then set prop to a object. should trigger 2 callbacks', () => {
-    const obj = {prop: {}}
-    const objectCallback = td.func()
+test('Setting null to an existing property and observe, then setting a real value should trigger a callback', () => {
+  const obj = {prop: {}}
+  const objectCallback = td.func()
 
-    pureObserver(obj, objectCallback)
+  pureObserver(obj, objectCallback)
 
-    expect(obj.prop).toEqual({})
-    td.verify(objectCallback(), {times: 0})
+  expect(obj.prop).toEqual({})
+  td.verify(objectCallback(), {times: 0})
 
-    obj.prop = null
+  obj.prop = null
 
-    expect(obj.prop).toBeNull()
-    td.verify(objectCallback(), {times: 1})
+  expect(obj.prop).toBeNull()
+  td.verify(objectCallback(), {times: 1})
+})
 
-    obj.prop = {}
+test('obj with a prop that is an object, set prop to null, then set prop to a object. should trigger 2 callbacks', () => {
+  const obj = {prop: {}}
+  const objectCallback = td.func()
 
-    expect(obj.prop).toBeNull()
-    td.verify(objectCallback(), {times: 2})
-  })
+  pureObserver(obj, objectCallback)
 
-  test('Setting null to an existing property and observe, then setting a real value should trigger a callback', () => {
-    const obj = {prop: {}}
-    const objectCallback = td.func()
+  expect(obj.prop).toEqual({})
+  td.verify(objectCallback(), {times: 0})
 
-    pureObserver(obj, objectCallback)
+  obj.prop = null
 
-    expect(obj.prop).toEqual({})
-    td.verify(objectCallback(), {times: 0})
+  expect(obj.prop).toBeNull()
+  td.verify(objectCallback(), {times: 1})
 
-    obj.prop = null
+  obj.prop = {}
 
-    expect(obj.prop).toBeNull()
-    td.verify(objectCallback(), {times: 1})
-  })
+  expect(obj.prop).toEqual({__proxyAttached: true})
+  td.verify(objectCallback(), {times: 2})
 })
 
 // - - UNSUPPORTED - -
