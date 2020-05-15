@@ -156,6 +156,7 @@ function attachProxyToField(
     })
   } catch (e) {
     // This if doesn't seem to make any difference
+    if (fieldName === 'length') return
     Object.defineProperty(object, fieldName, {
       configurable: true,
       enumerable: true,

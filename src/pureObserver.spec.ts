@@ -598,6 +598,21 @@ test('obj with a prop that is an object, set prop to null, then set prop to a ob
   td.verify(objectCallback(), {times: 2})
 })
 
+// - - OUTSTANDING BUGS - -
+describe('fix callback', () => {
+  test('deep array', () => {
+    const obj = {
+      nestedObj: {
+        deepArray: [],
+      },
+    }
+    const objectCallback = td.func()
+
+    pureObserver(obj, objectCallback)
+
+    td.verify(objectCallback(), {times: 3})
+  })
+})
 // - - UNSUPPORTED - -
 describe.skip('UNSUPPORTED', () => {
   test('CAN THIS EVER WORK? - ARRAY IS CHANGED OUTSIDE OF OBSERVED OBJECT', () => {
