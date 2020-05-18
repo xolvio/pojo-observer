@@ -69,10 +69,6 @@ export default class Gallery {
 
 And now any time a value inside the POJO changes, the `useObserver` hook will re-render the component. Sweet!
 
-If the values inside the POJO do not change, the `useObserver` hook will not re-render the component. Sweet!
-
-This is achieved internally by using `setState` with a `hash` of the POJO. You can see this in action by trying to repeatedly click the "Previous Image" button. The `previousImage` command in the `Gallery` will stop changing the `currentImage` when it gets to 0, and since the values inside the POJO are no longer changing, the `hash` method on the object ensures that the React component will not re-render.
-
 Bonus: You can test the heck out of the interaction now without having to mess with any UI testing libraries.
 
 ### Asynchrony 

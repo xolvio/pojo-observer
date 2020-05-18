@@ -1,11 +1,9 @@
 /* eslint-disable max-classes-per-file,react/button-has-type,no-plusplus */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import * as React from 'react'
-import {FunctionComponent} from 'react'
 import {render, act} from '@testing-library/react'
 import useObserver from './useObserver'
 import '@testing-library/jest-dom/extend-expect'
-import {addHash} from './addHash'
 
 test('add hash internally', () => {
   class TestClass {
@@ -213,7 +211,7 @@ test('add hash explicitly', () => {
   }
 
   function ComponentUsingModel({model}: {model: TestClass}) {
-    const methods = useObserver(addHash(model))
+    const methods = useObserver(model)
 
     return (
       <div>
@@ -226,7 +224,7 @@ test('add hash explicitly', () => {
   }
 
   function OtherComponentUsingModel({model}: {model: TestClass}) {
-    const methods = useObserver(addHash(model))
+    const methods = useObserver(model)
 
     return (
       <div>
@@ -551,10 +549,6 @@ test('it should re-render when multi-level depth fields are set to an object who
 
   function Component() {
     useObserver(object)
-    console.log(
-      'GOZDECKI object.field.nested.deep.very',
-      object?.field?.nested.deep.very
-    )
 
     return (
       <div data-testid="foo">
@@ -581,7 +575,6 @@ test('it should re-render when multi-level depth fields are set to an object who
     }
   })
 
-  console.log('GOZDECKI object.field.nested.deep', object.field.nested.deep)
   expect(getByTestId('foo')).toHaveTextContent('deeper')
   act(() => {
     object.field.nested.deep.very = 'fathoms'

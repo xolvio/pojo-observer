@@ -1,5 +1,4 @@
 import {useCallback, useEffect, useRef, useState} from 'react'
-import hash from './hash'
 import {generateId} from './helpers/generateId'
 
 class EventEmitter {
@@ -260,11 +259,6 @@ function addId(model: Model): void {
     })
 }
 
-function addHash(model: Model): void {
-  // eslint-disable-next-line no-param-reassign
-  if (!model.hash) model.hash = (): string => hash(model)
-}
-
 let currentId = 0
 
 export function useUniqueId(): string {
@@ -278,11 +272,11 @@ export function useUniqueId(): string {
 
 function useReactify(model: Model): Function {
   const subscriptionId = useUniqueId()
-  const [, stateChange] = useState(model.hash())
+  const [, stateChange] = useState(0)
 
   const stateChangeCallback = useCallback(() => {
-    stateChange(model.hash())
-  }, [model])
+    stateChange((prev) => prev + 1)
+  }, [])
 
   useEffect(() => {
     eventEmitter.on(model.__observableId, subscriptionId, stateChangeCallback)
@@ -292,7 +286,6 @@ function useReactify(model: Model): Function {
 }
 
 function decorate(model: Model): void {
-  addHash(model)
   addId(model)
 }
 
