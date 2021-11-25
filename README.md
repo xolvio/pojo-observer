@@ -45,23 +45,23 @@ export default class Gallery {
     this._selectedImage = 0
   }
 
-  nextImage() {
+  nextImage = () => {
     if (this._selectedImage < this.images.length - 1) {
       this._selectedImage++
     }
   }
 
-  previousImage() {
+  previousImage = () => {
     if (this._selectedImage > 0) {
       this._selectedImage--
     }
   }
 
-  addImage(image) {
+  addImage = (image) => {
     this._images.push(image)
   }
 
-  currentImage() {
+  currentImage = () => {
     return this._images[this._selectedImage]
   }
 }
